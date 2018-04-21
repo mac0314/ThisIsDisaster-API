@@ -9,11 +9,18 @@ module:testrunner
 
 GET     /                                       App.Index
 
-GET     /user                                   App.Index
+GET     /item                                   ItemCtrl.Index
+GET     /item/:id                               ItemCtrl.Get
+POST    /item                                   ItemCtrl.Add
+PUT     /item/:id                               ItemCtrl.Update
+DELETE  /item/:id                               ItemCtrl.Delete
+GET     /items                                  ItemCtrl.List
+
 GET     /smtp                                   SMTP.Index
 GET     /test                                   TEST.Index
+GET     /user                                   User.Index
 
-# Ignore favicon requests
+# favicon requests
 GET     /favicon.ico                            Static.Serve("public","img/favicon.ico")
 
 # Map static resources from the /app/public folder to the /public path
