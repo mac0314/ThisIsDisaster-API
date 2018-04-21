@@ -21,3 +21,17 @@ func (t *AppTest) TestThatIndexPageWorks() {
 func (t *AppTest) After() {
 	println("Tear down")
 }
+
+// Check if robots.txt exists
+func (t *AppTest) TestRobotsPage() {
+	t.Get("/robots.txt")
+	t.AssertOk()
+	t.AssertContentType("text/html")
+}
+
+// Will not appear in panel as it does not start with `Test`.
+func (t *AppTest) TEstFavIcon() {
+	t.Get("/favicon.ico")
+	t.AssertOk()
+	t.AssertContentType("text/html")
+}
