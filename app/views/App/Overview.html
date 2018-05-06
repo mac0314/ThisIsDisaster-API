@@ -1,0 +1,80 @@
+{{set . "title" "This is Disaster - Overview"}}
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  {{template "partials/head.html" .}}
+
+  <link rel="stylesheet" href="/public/css/overview.css">
+</head>
+<body>
+  <div id="wrap" class="main" role="toolbar">
+    <header id="header" class role="banner">
+      {{template "partials/header.html" .}}
+    </header>
+
+    <main id="content" role="main">
+      <h1>Overview</h1>
+
+      <section class="main_visual_area">
+        <div>
+        	<p class="caption">재난 상황 대처 지식 습득</p>
+        </div>
+        <div>
+        	<p class="caption">멀티 플레이를 통한 협력심 증진</p>
+        </div>
+        <div>
+        	<p class="caption">지속적인 플레이를 위한 다양한 흥미 요소 유발</p>
+        </div>
+
+        <h2>Event</h2>
+        <p class="caption">환경에 기반하여 이벤트 발생</p>
+        <img src="/public/img/kill_monster.gif">
+      </section>
+
+      <section class="sub_visual_area">
+        <h2>Shelter</h2>
+        <p class="caption">특정 재난상황에서 도움을 주거나 재난상황 이벤트가 발생하는 던전</p>
+        <img src="/public/img/shelter.gif">
+      </section>
+
+
+      <section class="sub_visual_area">
+        <h2>Character</h2>
+        <img src="/public/img/character.PNG">
+      </section>
+
+      <section class="sub_visual_area">
+        <h2>Inventory</h2>
+        <img src="/public/img/inventory.PNG">
+      </section>
+
+      <section class="sub_visual_area">
+        <h2>Map</h2>
+        <div>
+        	<p class="caption">설산, 초원, 사막, 무인도
+     4종류 환경을 랜덤하게 생성</p>
+        </div>
+        <img src="/public/img/desert.PNG" style="margin-bottom:100px;">
+
+        <div>
+        	<p class="caption">환경에 기반하여 이벤트 발생</p>
+        </div>
+        <img src="/public/img/snowy_trees.PNG">
+      </section>
+
+      <div class="container">
+        <div class="row">
+          <div class="span6">
+            {{template "partials/flash.html" .}}
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      {{template "partials/footer.html" .}}
+    </footer>
+  </div>
+</body>
+</html>

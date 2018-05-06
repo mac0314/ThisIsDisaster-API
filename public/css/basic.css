@@ -1,0 +1,115 @@
+header {
+  margin-bottom: 50px;
+}
+
+footer {
+  padding: 140px 0 158px;
+  background: #131313;
+  background-size: 1920px auto;
+}
+
+section {
+  margin-bottom: 100px;
+}
+
+body, input, select, textarea, button, th, td {
+  font-family: 'Arial', SimSun, sans-serif, 'Apple SD Gothic Neo';
+  font-size: 12px;
+  color: #555;
+}
+
+h1, h2 {
+  display: inline-block;
+}
+
+a {
+  color: #555;
+  cursor: pointer;
+}
+
+p {
+  display: block;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+}
+
+#content h1 {
+  align: center;
+}
+
+.visual_title a img{
+  width: auto;
+  height: auto;
+  max-width: 300px;
+  margin-left: 300px;
+}
+
+.main_visual_area .visual_title {
+  position: absolute;
+  bottom: 33%;
+  left: 50%;
+  -webkit-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+  z-index: 2;
+  width: 28.1%;
+  height: 18%;
+  background: url("/public/img/visual_title.png") no-repeat;
+  background-size: 100%;
+}
+
+.top_wrap .inner2 .communication_area {
+  float: left;
+  display: inline-block;
+}
+
+.top_wrap .inner2 .social_area {
+  float: right;
+  display: inline-block;
+}
+
+.foot_wrap .inner2 .social_area {
+  margin-bottom: 40px;
+}
+
+.foot_wrap .inner2 .copyright_area .copyright {
+  margin-bottom: 7px;
+}
+
+.foot_wrap .inner2 .copyright_area {
+  line-height: 16px;
+}
+
+
+.foot_wrap .inner2 .copyright_area a {
+  display: inline-block;
+  padding-right: 10px;
+  margin-right: 10px;
+  border-right: 1px solid #808080;
+}
+
+.foot_wrap .inner2 .copyright_area a:last-child {
+  border-right: none;
+}
+
+.inner {
+  margin-left: 30px;
+}
+
+
+.inner2 {
+  max-width: 1700px;
+  width: 800px;
+  margin-left: 30px;
+  padding: 0 55px 0 55px;
+}
+
+#content {
+  margin-bottom: 100px;
+}
+
+.blind {
+  display: none;
+}

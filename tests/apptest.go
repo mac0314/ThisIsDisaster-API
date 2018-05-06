@@ -26,12 +26,12 @@ func (t *AppTest) After() {
 func (t *AppTest) TestRobotsPage() {
 	t.Get("/robots.txt")
 	t.AssertOk()
-	t.AssertContentType("text/html")
+	t.AssertContentType("text/plain; charset=utf-8")
 }
 
 // Will not appear in panel as it does not start with `Test`.
-func (t *AppTest) TEstFavIcon() {
+func (t *AppTest) TestFavicon() {
 	t.Get("/favicon.ico")
 	t.AssertOk()
-	t.AssertContentType("text/html")
+	t.AssertContentType("image/x-icon")
 }

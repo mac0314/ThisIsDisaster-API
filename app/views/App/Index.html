@@ -1,21 +1,38 @@
-{{set . "title" "Home"}}
-{{template "header.html" .}}
+{{set . "title" "This is Disaster - Home"}}
 
-<header class="jumbotron" style="background-color:#A9F16C">
-  <div class="container">
-    <div class="row">
-      <h1>It works!</h1>
-      <p></p>
-    </div>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  {{template "partials/head.html" .}}
+
+  <link rel="stylesheet" href="/public/css/index.css">
+</head>
+<body>
+  <div id="wrap" class="main" role="toolbar">
+    <header id="header" class role="banner">
+      {{template "partials/header.html" .}}
+    </header>
+
+    <main id="content" role="main">
+      <h1 class="blind">This is Disaster MAIN</h1>
+
+      <section class="main_visual_area">
+        <h2 class="visual_title">
+          <a href="/">
+            <!--This is Disaster-->
+          </a>
+        </h2>
+        <img src="/public/img/kill_monster.gif">
+      </section>
+
+      <section class="sub_visual_area">
+        <img src="/public/img/shelter.gif">
+      </section>
+    </main>
+
+    <footer>
+      {{template "partials/footer.html" .}}
+    </footer>
   </div>
-</header>
-
-<div class="container">
-  <div class="row">
-    <div class="span6">
-      {{template "flash.html" .}}
-    </div>
-  </div>
-</div>
-
-{{template "footer.html" .}}
+</body>
+</html>

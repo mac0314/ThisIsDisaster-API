@@ -1,0 +1,10 @@
+<div class="foot_wrap">
+  <div class="inner2">
+    {{template "partials/social_area.html" .}}
+    {{template "partials/copyright_area.html" .}}
+  </div>
+</div>
+
+{{if eq .RunMode "dev"}}
+  {{template "partials/debug.html" .}}
+{{end}}

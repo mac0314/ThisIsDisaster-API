@@ -1,0 +1,60 @@
+.navbar {
+  width: 100%;
+}
+
+.gnb_wrap {
+  background-color: #ffffff;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+  margin-bottom: 20px;
+
+  z-index: 5;
+}
+
+.gnb_wrap .inner {
+  display: inline-block;
+  height: 64px;
+  border: 1px solid red;
+}
+
+.gnb_wrap .inner .logo {
+  display: inline-block;
+  position: absolute;
+  z-index: 6;
+  width: 60px;
+  height: 60px;
+  background: url("/public/img/logo.png") no-repeat;
+  background-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.navigation {
+  margin: 20px 0 0 70px;
+}
+
+.top_wrap {
+  background-color: #ffffff;
+}
+
+.top_wrap .inner2 {
+  display: inline-block;
+  border: 1px solid blue;
+}
+
+.social_area {
+
+}
+
+/* The sticky class is added to the header with JS when it reaches its scroll position */
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%
+}
+
+/* Add some top padding to the page content to prevent sudden quick movement (as the header gets a new position at the top of the page (position:fixed and top:0) */
+.sticky + .content {
+  padding-top: 102px;
+}

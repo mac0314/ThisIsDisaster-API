@@ -7,24 +7,41 @@ module:testrunner
 # module:jobs
 
 
-GET     /                                       App.Index
+# Web routes
+GET     /                                           App.Index
+GET     /news                                           App.News
+GET     /overview                                           App.Overview
+GET     /media                                           App.Media
+GET     /community                                           App.Community
 
-GET     /item                                   ItemCtrl.Index
-GET     /item/:id                               ItemCtrl.Get
-POST    /item                                   ItemCtrl.Add
-PUT     /item/:id                               ItemCtrl.Update
-DELETE  /item/:id                               ItemCtrl.Delete
-GET     /items                                  ItemCtrl.List
+GET     /admin                                           Admin.Index
 
-GET     /smtp                                   SMTP.Index
-GET     /test                                   TEST.Index
-GET     /user                                   User.Index
+
+# API routes
+GET     /api/item                                   ItemCtrl.Index
+GET     /api/item/:id                               ItemCtrl.Get
+POST    /api/item                                   ItemCtrl.Add
+PUT     /api/item/:id                               ItemCtrl.Update
+DELETE  /api/item/:id                               ItemCtrl.Delete
+GET     /api/items                                  ItemCtrl.List
+
+GET     /api/smtp                                   SMTP.Index
+GET     /api/test                                   TEST.Index
+
+GET     /api/user                                   User.Index
+GET     /api/user/:nickname/lobby                   User.Lobby
+GET     /api/user/:nickname/costume                 User.Costume
+
+GET     /api/game/singleplay/:nickname              Game.SinglePlay
+GET     /api/game/multiplay/:nickname               Game.MultiPlay
 
 # favicon requests
-GET     /favicon.ico                            Static.Serve("public","img/favicon.ico")
+GET     /favicon.ico                                Static.Serve("public","img/favicon.ico")
+
+GET     /robots.txt                               App.RobotsTxt
 
 # Map static resources from the /app/public folder to the /public path
-GET     /public/*filepath                       Static.Serve("public")
+GET     /public/*filepath                           Static.Serve("public")
 
 # Catch all, this will route any request into the controller path
 #
