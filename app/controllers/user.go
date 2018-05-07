@@ -23,19 +23,19 @@ func (c User) Index() revel.Result {
 	data := make(map[string]interface{})
 
 	data["nickname"] = nickname
-	data["score"] = "1000"
-	data["level"] = "15"
-	data["gold"] = "90000"
+	data["email"] = "admin@thisisdisaster.com"
+	data["signin_time"] = "2018-05-06T15:04:05Z07:00"
 
 	response["result_data"] = data
 
 	return c.RenderJSON(response)
 }
 
-func (c User) Lobby(nickname string) revel.Result {
+func (c User) Lobby() revel.Result {
 	// TODO modify demo data
 	var code string = "200"
 	var msg string = "Success"
+	var nickname string = "mac"
 
 	// JSON response
 	response := make(map[string]interface{})
@@ -46,13 +46,15 @@ func (c User) Lobby(nickname string) revel.Result {
 	data["nickname"] = nickname
 	data["level"] = "15"
 	data["exp"] = "12412"
+	data["score"] = "980"
+	data["gold"] = "9000"
 
 	response["result_data"] = data
 
 	return c.RenderJSON(response)
 }
 
-func (c User) Costume(nickname string) revel.Result {
+func (c User) Costume() revel.Result {
 	// TODO modify demo data
 	//var code string = "200"
 	//var msg string = "Success"
@@ -94,6 +96,58 @@ func (c User) Costume(nickname string) revel.Result {
 					{
 						"name": "costume02",
 						"info": "Unique costume"
+					}
+				]
+			}
+		}
+		`
+
+	var response map[string]interface{} // JSON 문서의 데이터를 저장할 공간을 맵으로 선언
+
+	json.Unmarshal([]byte(testData), &response) // doc를 바이트 슬라이스로 변환하여 넣고,
+	// data의 포인터를 넣어줌
+
+	return c.RenderJSON(response)
+}
+
+func (c User) Score() revel.Result {
+	// TODO modify demo data
+	// Demo data
+	testData := `
+	{
+			"result_code": "200",
+			"result_msg": "Success",
+			"result_data": {
+				"achievement_list": [
+					{
+						"name": "Fashion newbie",
+						"info": "Get First costume",
+						"score": 10
+					},
+					{
+						"name": "Fashionista",
+						"info": "Get Unique costume 5",
+						"score": 10
+					},
+					{
+						"name": "Beginner",
+						"info": "Clear tutorial",
+						"score": 10
+					},
+					{
+						"name": "Explorer",
+						"info": "Clear all stage",
+						"score": 10
+					},
+					{
+						"name": "Slayer",
+						"info": "Kill 1000 monsters",
+						"score": 10
+					},
+					{
+						"name": "Coward",
+						"info": "Hide in shelter",
+						"score": 10
 					}
 				]
 			}

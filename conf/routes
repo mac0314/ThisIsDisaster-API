@@ -9,12 +9,12 @@ module:testrunner
 
 # Web routes
 GET     /                                           App.Index
-GET     /news                                           App.News
-GET     /overview                                           App.Overview
-GET     /media                                           App.Media
-GET     /community                                           App.Community
+GET     /news                                       App.News
+GET     /overview                                   App.Overview
+GET     /media                                      App.Media
+GET     /community                                  App.Community
 
-GET     /admin                                           Admin.Index
+GET     /admin                                      Admin.Index
 
 
 # API routes
@@ -29,16 +29,22 @@ GET     /api/smtp                                   SMTP.Index
 GET     /api/test                                   TEST.Index
 
 GET     /api/user                                   User.Index
-GET     /api/user/:nickname/lobby                   User.Lobby
-GET     /api/user/:nickname/costume                 User.Costume
+GET     /api/user/lobby                             User.Lobby
+GET     /api/user/costume                           User.Costume
+GET     /api/user/score                             User.Score
 
-GET     /api/game/singleplay/:nickname              Game.SinglePlay
-GET     /api/game/multiplay/:nickname               Game.MultiPlay
+GET     /api/game/singleplay/result                 Game.SinglePlayResult
+GET     /api/game/multiplay/result                  Game.MultiPlayResult
+GET     /api/game/multiplay/lobby                   Game.MultiPlayLobby
 
-# favicon requests
+GET     /api/store                                  Store.Index
+POST    /api/store                                  Store.BuyCostume
+
+# favicon
 GET     /favicon.ico                                Static.Serve("public","img/favicon.ico")
 
-GET     /robots.txt                               App.RobotsTxt
+# robots.txt
+GET     /robots.txt                                 App.RobotsTxt
 
 # Map static resources from the /app/public folder to the /public path
 GET     /public/*filepath                           Static.Serve("public")
