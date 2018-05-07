@@ -18,14 +18,49 @@ GET     /admin                                      Admin.Index
 
 
 # API routes
-GET     /api/item                                   ItemCtrl.Index
+GET     /api/achievement/:id                        AchievementCtrl.Get
+POST    /api/achievement                            AchievementCtrl.Add
+PUT     /api/achievement/:id                        AchievementCtrl.Update
+DELETE  /api/achievement/:id                        AchievementCtrl.Delete
+GET     /api/achievements                           AchievementCtrl.List
+
+GET     /api/error/:id                              ErrorCtrl.Get
+POST    /api/error                                  ErrorCtrl.Add
+PUT     /api/error/:id                              ErrorCtrl.Update
+DELETE  /api/error/:id                              ErrorCtrl.Delete
+GET     /api/errors                                 ErrorCtrl.List
+
+GET     /api/event/:id                              EventCtrl.Get
+POST    /api/event                                  EventCtrl.Add
+PUT     /api/event/:id                              EventCtrl.Update
+DELETE  /api/event/:id                              EventCtrl.Delete
+GET     /api/events                                 EventCtrl.List
+
+GET     /api/feedback/:id                           FeedbackCtrl.Get
+POST    /api/feedback                               FeedbackCtrl.Add
+PUT     /api/feedback/:id                           FeedbackCtrl.Update
+DELETE  /api/feedback/:id                           FeedbackCtrl.Delete
+GET     /api/feedbacks                              FeedbackCtrl.List
+
 GET     /api/item/:id                               ItemCtrl.Get
 POST    /api/item                                   ItemCtrl.Add
 PUT     /api/item/:id                               ItemCtrl.Update
 DELETE  /api/item/:id                               ItemCtrl.Delete
 GET     /api/items                                  ItemCtrl.List
 
-GET     /api/smtp                                   SMTP.Index
+GET     /api/notice/:id                             NoticeCtrl.Get
+POST    /api/notice                                 NoticeCtrl.Add
+PUT     /api/notice/:id                             NoticeCtrl.Update
+DELETE  /api/notice/:id                             NoticeCtrl.Delete
+GET     /api/notices                                NoticeCtrl.List
+
+GET     /api/user/:id                               UserCtrl.Get
+POST    /api/user                                   UserCtrl.Add
+PUT     /api/user/:id                               UserCtrl.Update
+DELETE  /api/user/:id                               UserCtrl.Delete
+GET     /api/users                                  UserCtrl.List
+
+POST    /api/smtp                                   SMTP.Index
 GET     /api/test                                   TEST.Index
 
 GET     /api/user                                   User.Index

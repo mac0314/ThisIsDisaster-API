@@ -43,6 +43,16 @@ func getConnectionString() string {
 		user, pass, protocol, host, port, dbname, dbargs)
 }
 
+func defineTable(dbm *gorp.DbMap) {
+	defineAchievementTable(dbm)
+	defineErrorTable(dbm)
+	defineEventTable(dbm)
+	defineFeedbackTable(dbm)
+	defineItemTable(dbm)
+	defineNoticeTable(dbm)
+	defineUserTable(dbm)
+}
+
 func initDB() {
 	connectionString := getConnectionString()
 	if db, err := sql.Open("mysql", connectionString); err != nil {
@@ -54,7 +64,8 @@ func initDB() {
 	}
 	// Defines the table for use by GORP
 	// This is a function we will create soon.
-	defineBidItemTable(Dbm)
+	defineTable(Dbm)
+
 	if err := Dbm.CreateTablesIfNotExists(); err != nil {
 		revel.ERROR.Fatal(err)
 	}

@@ -12,34 +12,20 @@ type ItemCtrl struct {
 	GorpController
 }
 
-func (c ItemCtrl) Index() revel.Result {
-	var code string = "200"
-	var msg string = "Success"
-	var nickname string = "mac"
-
-	// JSON response
-	response := make(map[string]interface{})
-	response["result_code"] = code
-	response["result_msg"] = msg
-	data := make(map[string]interface{})
-
-	data["nickname"] = nickname
-	data["item"] = "sword01"
-
-	response["result_data"] = data
-
-	return c.RenderJSON(response)
-}
-
-func defineBidItemTable(dbm *gorp.DbMap) {
+func defineItemTable(dbm *gorp.DbMap) {
 	// set "id" as primary key and autoincrement
-	t := dbm.AddTable(models.Item{}).SetKeys(true, "item_id")
+	t := dbm.AddTableWithName(models.Item{}, "item").SetKeys(true, "item_id")
 	// e.g. VARCHAR(25)
-	t.ColMap("name_sn").SetMaxSize(25)
+	t.ColMap("name_sn").SetMaxSize(20)
+	t.ColMap("type_sn").SetMaxSize(20)
+	t.ColMap("rank_sn").SetMaxSize(20)
+	t.ColMap("effect_ln").SetMaxSize(255)
+	t.ColMap("resource_mn").SetMaxSize(50)
 }
 
-func (c ItemCtrl) parseBidItem() models.Item {
+func (c ItemCtrl) parseItem() models.Item {
 	var jsonData models.Item
+
 	c.Params.BindJSON(&jsonData)
 
 	fmt.Println(jsonData)
@@ -48,7 +34,7 @@ func (c ItemCtrl) parseBidItem() models.Item {
 }
 
 func (c ItemCtrl) Add() revel.Result {
-	item := c.parseBidItem()
+	item := c.parseItem()
 	fmt.Println(item)
 	// Validate the model
 	item.Validate(c.Validation)
@@ -57,6 +43,7 @@ func (c ItemCtrl) Add() revel.Result {
 		return c.RenderText("You have error in your item.")
 	} else {
 		if err := c.Txn.Insert(&item); err != nil {
+			fmt.Println(err)
 			return c.RenderText(
 				"Error inserting record into database!")
 		} else {
@@ -69,7 +56,7 @@ func (c ItemCtrl) Add() revel.Result {
 func (c ItemCtrl) Get(id int64) revel.Result {
 	item := new(models.Item)
 	err := c.Txn.SelectOne(item,
-		`SELECT * FROM Item WHERE item_id = ?`, id)
+		`SELECT * FROM item WHERE item_id = ?`, id)
 	if err != nil {
 		return c.RenderText("Error.  item probably doesn't exist.")
 	}
@@ -80,7 +67,7 @@ func (c ItemCtrl) List() revel.Result {
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 	item, err := c.Txn.Select(models.Item{},
-		`SELECT * FROM Item WHERE item_id > ? LIMIT ?`, lastId, limit)
+		`SELECT * FROM item WHERE item_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
 		return c.RenderText(
 			"Error trying to get records from DB.")
@@ -89,7 +76,7 @@ func (c ItemCtrl) List() revel.Result {
 }
 
 func (c ItemCtrl) Update(id int64) revel.Result {
-	item := c.parseBidItem()
+	item := c.parseItem()
 	// Ensure the Id is set.
 	item.Id = id
 	success, err := c.Txn.Update(&item)
