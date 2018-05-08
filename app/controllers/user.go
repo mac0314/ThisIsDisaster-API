@@ -161,3 +161,21 @@ func (c User) Score() revel.Result {
 
 	return c.RenderJSON(response)
 }
+
+func (c User) Matching() revel.Result {
+	// TODO modify demo data
+	// Demo data
+	testData := `
+	{
+		"result_code": "200",
+		"result_msg": "Success"
+	}
+	`
+
+	var response map[string]interface{} // JSON 문서의 데이터를 저장할 공간을 맵으로 선언
+
+	json.Unmarshal([]byte(testData), &response) // doc를 바이트 슬라이스로 변환하여 넣고,
+	// data의 포인터를 넣어줌
+
+	return c.RenderJSON(response)
+}

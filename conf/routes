@@ -24,6 +24,30 @@ PUT     /api/achievement/:id                        AchievementCtrl.Update
 DELETE  /api/achievement/:id                        AchievementCtrl.Delete
 GET     /api/achievements                           AchievementCtrl.List
 
+GET     /api/authorize/:id                          AuthorizeCtrl.Get
+POST    /api/authorize                              AuthorizeCtrl.Add
+PUT     /api/authorize/:id                          AuthorizeCtrl.Update
+DELETE  /api/authorize/:id                          AuthorizeCtrl.Delete
+GET     /api/authorizes                             AuthorizeCtrl.List
+
+GET     /api/character/:id                          CharacterCtrl.Get
+POST    /api/character                              CharacterCtrl.Add
+PUT     /api/character/:id                          CharacterCtrl.Update
+DELETE  /api/character/:id                          CharacterCtrl.Delete
+GET     /api/characters                             CharacterCtrl.List
+
+GET     /api/costume/body/:id                       BodyCostumeCtrl.Get
+POST    /api/costume/body                           BodyCostumeCtrl.Add
+PUT     /api/costume/body/:id                       BodyCostumeCtrl.Update
+DELETE  /api/costume/body/:id                       BodyCostumeCtrl.Delete
+GET     /api/costumes/body                          BodyCostumeCtrl.List
+
+GET     /api/costume/head/:id                       HeadCostumeCtrl.Get
+POST    /api/costume/head                           HeadCostumeCtrl.Add
+PUT     /api/costume/head/:id                       HeadCostumeCtrl.Update
+DELETE  /api/costume/head/:id                       HeadCostumeCtrl.Delete
+GET     /api/costumes/head                          HeadCostumeCtrl.List
+
 GET     /api/error/:id                              ErrorCtrl.Get
 POST    /api/error                                  ErrorCtrl.Add
 PUT     /api/error/:id                              ErrorCtrl.Update
@@ -48,17 +72,35 @@ PUT     /api/item/:id                               ItemCtrl.Update
 DELETE  /api/item/:id                               ItemCtrl.Delete
 GET     /api/items                                  ItemCtrl.List
 
+GET     /api/monster/:id                            MonsterCtrl.Get
+POST    /api/monster                                MonsterCtrl.Add
+PUT     /api/monster/:id                            MonsterCtrl.Update
+DELETE  /api/monster/:id                            MonsterCtrl.Delete
+GET     /api/monsters                               MonsterCtrl.List
+
 GET     /api/notice/:id                             NoticeCtrl.Get
 POST    /api/notice                                 NoticeCtrl.Add
 PUT     /api/notice/:id                             NoticeCtrl.Update
 DELETE  /api/notice/:id                             NoticeCtrl.Delete
 GET     /api/notices                                NoticeCtrl.List
 
+GET     /api/stage/:id                              StageCtrl.Get
+POST    /api/stage                                  StageCtrl.Add
+PUT     /api/stage/:id                              StageCtrl.Update
+DELETE  /api/stage/:id                              StageCtrl.Delete
+GET     /api/stages                                 StageCtrl.List
+
 GET     /api/user/:id                               UserCtrl.Get
 POST    /api/user                                   UserCtrl.Add
 PUT     /api/user/:id                               UserCtrl.Update
 DELETE  /api/user/:id                               UserCtrl.Delete
 GET     /api/users                                  UserCtrl.List
+
+GET     /api/user/:id/setting                       UserSettingCtrl.Get
+POST    /api/user/setting                           UserSettingCtrl.Add
+PUT     /api/user/:id/setting                       UserSettingCtrl.Update
+DELETE  /api/user/:id/setting                       UserSettingCtrl.Delete
+GET     /api/users/setting                          UserSettingCtrl.List
 
 POST    /api/smtp                                   SMTP.Index
 GET     /api/test                                   TEST.Index
@@ -67,6 +109,7 @@ GET     /api/user                                   User.Index
 GET     /api/user/lobby                             User.Lobby
 GET     /api/user/costume                           User.Costume
 GET     /api/user/score                             User.Score
+POST    /api/user/matching                          User.Matching
 
 GET     /api/game/singleplay/result                 Game.SinglePlayResult
 GET     /api/game/multiplay/result                  Game.MultiPlayResult

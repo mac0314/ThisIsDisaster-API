@@ -45,12 +45,19 @@ func getConnectionString() string {
 
 func defineTable(dbm *gorp.DbMap) {
 	defineAchievementTable(dbm)
+	defineAuthorizeTable(dbm)
+	defineBodyCostumeTable(dbm)
+	defineCharacterTable(dbm)
 	defineErrorTable(dbm)
 	defineEventTable(dbm)
 	defineFeedbackTable(dbm)
+	defineHeadCostumeTable(dbm)
 	defineItemTable(dbm)
+	defineMonsterTable(dbm)
 	defineNoticeTable(dbm)
+	defineStageTable(dbm)
 	defineUserTable(dbm)
+	defineUserSettingTable(dbm)
 }
 
 func initDB() {

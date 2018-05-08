@@ -48,6 +48,7 @@ func (c UserCtrl) Add() revel.Result {
 			return c.RenderText(
 				"Error inserting record into database!")
 		} else {
+
 			return c.RenderJSON(user)
 		}
 	}
