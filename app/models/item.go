@@ -7,12 +7,12 @@ import (
 )
 
 type Item struct {
-	Id       int64  `db:"item_id, primarykey, autoincrement" json:"id"`
-	Name     string `db:"name_sn" json:"name"`
-	Type     string `db:"type_sn" json:"type"`
-	Rank     string `db:"rank_sn" json:"rank"`
-	Effect   string `db:"effect_ln" json:"effect"`
-	Resource string `db:"resource_mn" json:"resource"`
+	Id       int64  `db:"item_id, primarykey, autoincrement" json:"id" xml:"id"`
+	Name     string `db:"name_sn" json:"name" xml:"name"`
+	Type     string `db:"type_sn" json:"type" xml:"type"`
+	Rank     string `db:"rank_sn" json:"rank" xml:"rank"`
+	Effect   string `db:"effect_ln" json:"effect" xml:"effect"`
+	Resource string `db:"resource_mn" json:"resource" xml:"resource"`
 }
 
 func (b *Item) Validate(v *revel.Validation) {

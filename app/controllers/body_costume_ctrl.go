@@ -35,64 +35,130 @@ func (c BodyCostumeCtrl) parseBodyCostume() models.BodyCostume {
 }
 
 func (c BodyCostumeCtrl) Add() revel.Result {
-	body_costume := c.parseBodyCostume()
-	fmt.Println(body_costume)
-	// Validate the model
-	body_costume.Validate(c.Validation)
-	if c.Validation.HasErrors() {
-		// Do something better here!
-		return c.RenderText("You have error in your body_costume.")
-	} else {
-		if err := c.Txn.Insert(&body_costume); err != nil {
-			fmt.Println(err)
-			return c.RenderText(
-				"Error inserting record into database!")
-		} else {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
 
-			return c.RenderJSON(body_costume)
+	bodyCostume := c.parseBodyCostume()
+	fmt.Println(bodyCostume)
+	// Validate the model
+	bodyCostume.Validate(c.Validation)
+	if c.Validation.HasErrors() {
+		msg = msg + " You have error in your body costume."
+	} else {
+		if err := c.Txn.Insert(&bodyCostume); err != nil {
+			fmt.Println(err)
+
+			msg = msg + " Error inserting record into database!"
+		} else {
+			code = 200
+			msg = "Success."
+			data["result_data"] = bodyCostume
 		}
 	}
 
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c BodyCostumeCtrl) Get(id int64) revel.Result {
-	body_costume := new(models.BodyCostume)
-	err := c.Txn.SelectOne(body_costume,
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
+	bodyCostume := new(models.BodyCostume)
+	err := c.Txn.SelectOne(bodyCostume,
 		`SELECT * FROM body_costume WHERE body_costume_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
-		return c.RenderText("Error. body_costume probably doesn't exist.")
+
+		msg = msg + " Error body costume probably doesn't exist."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = bodyCostume
 	}
-	return c.RenderJSON(body_costume)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c BodyCostumeCtrl) List() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
-	body_costume, err := c.Txn.Select(models.BodyCostume{},
+	bodyCostume, err := c.Txn.Select(models.BodyCostume{},
 		`SELECT * FROM body_costume WHERE body_costume_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		return c.RenderText(
-			"Error trying to get records from DB.")
+		fmt.Println(err)
+
+		msg = msg + " Error trying to get records from DB."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = bodyCostume
 	}
-	return c.RenderJSON(body_costume)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c BodyCostumeCtrl) Update(id int64) revel.Result {
-	body_costume := c.parseBodyCostume()
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
+	bodyCostume := c.parseBodyCostume()
 	// Ensure the Id is set.
-	body_costume.Id = id
-	success, err := c.Txn.Update(&body_costume)
+	bodyCostume.Id = id
+	success, err := c.Txn.Update(&bodyCostume)
 	if err != nil || success == 0 {
-		return c.RenderText("Unable to update body_costume.")
+		fmt.Println(err)
+
+		msg = msg + " Unable to update body costume."
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Updated %d", id)
+		data["result_data"] = bodyCostume
 	}
-	return c.RenderText("Updated %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c BodyCostumeCtrl) Delete(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	success, err := c.Txn.Delete(&models.BodyCostume{Id: id})
 	if err != nil || success == 0 {
-		return c.RenderText("Failed to remove body_costume")
+		fmt.Println(err)
+
+		msg = msg + " Failed to remove body costume"
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
-	return c.RenderText("Deleted %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }

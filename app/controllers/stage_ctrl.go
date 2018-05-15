@@ -34,63 +34,123 @@ func (c StageCtrl) parseStage() models.Stage {
 }
 
 func (c StageCtrl) Add() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	stage := c.parseStage()
 	fmt.Println(stage)
 	// Validate the model
 	stage.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		// Do something better here!
-		return c.RenderText("You have error in your stage.")
+		msg = msg + " You have error in your stage."
 	} else {
 		if err := c.Txn.Insert(&stage); err != nil {
 			fmt.Println(err)
-			return c.RenderText(
-				"Error inserting record into database!")
+
+			msg = msg + " Error inserting record into database!"
 		} else {
-			return c.RenderJSON(stage)
+			code = 200
+			msg = "Success."
+			data["result_data"] = stage
 		}
 	}
 
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c StageCtrl) Get(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	stage := new(models.Stage)
 	err := c.Txn.SelectOne(stage,
 		`SELECT * FROM stage WHERE stage_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
-		return c.RenderText("Error. stage probably doesn't exist.")
+
+		msg = msg + "Error. stage probably doesn't exist."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = stage
 	}
-	return c.RenderJSON(stage)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c StageCtrl) List() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 	stage, err := c.Txn.Select(models.Stage{},
 		`SELECT * FROM stage WHERE stage_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		return c.RenderText(
-			"Error trying to get records from DB.")
+		msg = msg + "Error trying to get records from DB."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = stage
 	}
-	return c.RenderJSON(stage)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c StageCtrl) Update(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	stage := c.parseStage()
 	// Ensure the Id is set.
 	stage.Id = id
 	success, err := c.Txn.Update(&stage)
 	if err != nil || success == 0 {
-		return c.RenderText("Unable to update stage.")
+		msg = msg + " Unable to update stage."
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Updated %d", id)
 	}
-	return c.RenderText("Updated %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c StageCtrl) Delete(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	success, err := c.Txn.Delete(&models.Stage{Id: id})
 	if err != nil || success == 0 {
-		return c.RenderText("Failed to remove stage")
+		msg = msg + " Failed to remove stage"
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
-	return c.RenderText("Deleted %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }

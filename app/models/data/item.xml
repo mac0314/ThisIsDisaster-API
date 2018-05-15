@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Items>
+  <Item id="1" type="head"    name="_dummy_head" sprite="Item/head" max="1" tag="dummy">
+    <id>1</id>
+    <name>_dummy_head</name>
+    <type>normal</type>
+    <rank>normal</rank>
+    <effect>+10</effect>
+    <resource>Item/head</resource>
+  </Item>
+  <Item id="2" type="body"    name="_dummy_body" sprite="Item/body" max="1" tag="dummy">
+    <id>2</id>
+    <name>_dummy_body</name>
+    <type>normal</type>
+    <rank>normal</rank>
+    <effect>+10</effect>
+    <resource>Item/body</resource>
+  </Item>
+</Items>

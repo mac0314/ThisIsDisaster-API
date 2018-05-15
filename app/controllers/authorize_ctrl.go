@@ -35,63 +35,130 @@ func (c AuthorizeCtrl) parseAuthorize() models.Authorize {
 }
 
 func (c AuthorizeCtrl) Add() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	authorize := c.parseAuthorize()
 	fmt.Println(authorize)
 	// Validate the model
 	authorize.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		// Do something better here!
-		return c.RenderText("You have error in your authorize.")
+		msg = msg + " You have error in your authorize."
 	} else {
 		if err := c.Txn.Insert(&authorize); err != nil {
 			fmt.Println(err)
-			return c.RenderText(
-				"Error inserting record into database!")
+
+			msg = msg + " Error inserting record into database!"
 		} else {
-			return c.RenderJSON(authorize)
+			code = 200
+			msg = "Success."
+			data["result_data"] = authorize
 		}
 	}
 
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c AuthorizeCtrl) Get(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	authorize := new(models.Authorize)
 	err := c.Txn.SelectOne(authorize,
 		`SELECT * FROM authorize WHERE auth_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
-		return c.RenderText("Error. authorize probably doesn't exist.")
+
+		msg = msg + " Error authorize probably doesn't exist."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = authorize
 	}
-	return c.RenderJSON(authorize)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c AuthorizeCtrl) List() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 	authorize, err := c.Txn.Select(models.Authorize{},
 		`SELECT * FROM authorize WHERE auth_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		return c.RenderText(
-			"Error trying to get records from DB.")
+		fmt.Println(err)
+
+		msg = msg + " Error trying to get records from DB."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = authorize
 	}
-	return c.RenderJSON(authorize)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c AuthorizeCtrl) Update(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	authorize := c.parseAuthorize()
 	// Ensure the Id is set.
 	authorize.Id = id
 	success, err := c.Txn.Update(&authorize)
 	if err != nil || success == 0 {
-		return c.RenderText("Unable to update authorize.")
+		fmt.Println(err)
+
+		msg = msg + " Unable to update authorize."
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Updated %d", id)
+		data["result_data"] = authorize
 	}
-	return c.RenderText("Updated %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c AuthorizeCtrl) Delete(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	success, err := c.Txn.Delete(&models.Authorize{Id: id})
 	if err != nil || success == 0 {
-		return c.RenderText("Failed to remove authorize")
+		fmt.Println(err)
+
+		msg = msg + " Failed to remove authorize"
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
-	return c.RenderText("Deleted %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }

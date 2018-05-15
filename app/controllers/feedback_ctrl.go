@@ -36,63 +36,130 @@ func (c FeedbackCtrl) parseFeedback() models.Feedback {
 }
 
 func (c FeedbackCtrl) Add() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	feedback := c.parseFeedback()
 	fmt.Println(feedback)
 	// Validate the model
 	feedback.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		// Do something better here!
-		return c.RenderText("You have error in your feedback.")
+		msg = msg + " You have error in your feedback."
 	} else {
 		if err := c.Txn.Insert(&feedback); err != nil {
 			fmt.Println(err)
-			return c.RenderText(
-				"Error inserting record into database!")
+
+			msg = msg + " Error inserting record into database!"
 		} else {
-			return c.RenderJSON(feedback)
+			code = 200
+			msg = "Success."
+			data["result_data"] = feedback
 		}
 	}
 
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c FeedbackCtrl) Get(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	feedback := new(models.Feedback)
 	err := c.Txn.SelectOne(feedback,
 		`SELECT * FROM feedback WHERE feedback_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
-		return c.RenderText("Error. feedback probably doesn't exist.")
+
+		msg = msg + " Error feedback probably doesn't exist."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = feedback
 	}
-	return c.RenderJSON(feedback)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c FeedbackCtrl) List() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 	feedback, err := c.Txn.Select(models.Feedback{},
 		`SELECT * FROM feedback WHERE feedback_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		return c.RenderText(
-			"Error trying to get records from DB.")
+		fmt.Println(err)
+
+		msg = msg + " Error trying to get records from DB."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = feedback
 	}
-	return c.RenderJSON(feedback)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c FeedbackCtrl) Update(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	feedback := c.parseFeedback()
 	// Ensure the Id is set.
 	feedback.Id = id
 	success, err := c.Txn.Update(&feedback)
 	if err != nil || success == 0 {
-		return c.RenderText("Unable to update feedback.")
+		fmt.Println(err)
+
+		msg = msg + " Unable to update feedback."
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Updated %d", id)
+		data["result_data"] = feedback
 	}
-	return c.RenderText("Updated %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c FeedbackCtrl) Delete(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	success, err := c.Txn.Delete(&models.Feedback{Id: id})
 	if err != nil || success == 0 {
-		return c.RenderText("Failed to remove feedback")
+		fmt.Println(err)
+
+		msg = msg + " Failed to remove feedback"
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
-	return c.RenderText("Deleted %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }

@@ -36,64 +36,130 @@ func (c MonsterCtrl) parseMonster() models.Monster {
 }
 
 func (c MonsterCtrl) Add() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	monster := c.parseMonster()
 	fmt.Println(monster)
 	// Validate the model
 	monster.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		// Do something better here!
-		return c.RenderText("You have error in your monster.")
+		msg = msg + " You have error in your monster."
 	} else {
 		if err := c.Txn.Insert(&monster); err != nil {
 			fmt.Println(err)
-			return c.RenderText(
-				"Error inserting record into database!")
-		} else {
 
-			return c.RenderJSON(monster)
+			msg = msg + " Error inserting record into database!"
+		} else {
+			code = 200
+			msg = "Success."
+			data["result_data"] = monster
 		}
 	}
 
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c MonsterCtrl) Get(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	monster := new(models.Monster)
 	err := c.Txn.SelectOne(monster,
 		`SELECT * FROM monster WHERE monster_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
-		return c.RenderText("Error. monster probably doesn't exist.")
+
+		msg = msg + " Error monster probably doesn't exist."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = monster
 	}
-	return c.RenderJSON(monster)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c MonsterCtrl) List() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 	monster, err := c.Txn.Select(models.Monster{},
 		`SELECT * FROM monster WHERE monster_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		return c.RenderText(
-			"Error trying to get records from DB.")
+		fmt.Println(err)
+
+		msg = msg + " Error trying to get records from DB."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = monster
 	}
-	return c.RenderJSON(monster)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c MonsterCtrl) Update(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	monster := c.parseMonster()
 	// Ensure the Id is set.
 	monster.Id = id
 	success, err := c.Txn.Update(&monster)
 	if err != nil || success == 0 {
-		return c.RenderText("Unable to update monster.")
+		fmt.Println(err)
+
+		msg = msg + " Unable to update monster."
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Updated %d", id)
+		data["result_data"] = monster
 	}
-	return c.RenderText("Updated %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c MonsterCtrl) Delete(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	success, err := c.Txn.Delete(&models.Monster{Id: id})
 	if err != nil || success == 0 {
-		return c.RenderText("Failed to remove monster")
+		fmt.Println(err)
+
+		msg = msg + " Failed to remove monster"
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
-	return c.RenderText("Deleted %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }

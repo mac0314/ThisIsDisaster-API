@@ -33,63 +33,130 @@ func (c CharacterCtrl) parseCharacter() models.Character {
 }
 
 func (c CharacterCtrl) Add() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	character := c.parseCharacter()
 	fmt.Println(character)
 	// Validate the model
 	character.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		// Do something better here!
-		return c.RenderText("You have error in your character.")
+		msg = msg + " You have error in your character."
 	} else {
 		if err := c.Txn.Insert(&character); err != nil {
 			fmt.Println(err)
-			return c.RenderText(
-				"Error inserting record into database!")
+
+			msg = msg + " Error inserting record into database!"
 		} else {
-			return c.RenderJSON(character)
+			code = 200
+			msg = "Success."
+			data["result_data"] = character
 		}
 	}
 
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c CharacterCtrl) Get(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	character := new(models.Character)
 	err := c.Txn.SelectOne(character,
 		`SELECT * FROM u_character WHERE u_character_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
-		return c.RenderText("Error. character probably doesn't exist.")
+
+		msg = msg + " Error character probably doesn't exist."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = character
 	}
-	return c.RenderJSON(character)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c CharacterCtrl) List() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 	character, err := c.Txn.Select(models.Character{},
 		`SELECT * FROM u_character WHERE u_character_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		return c.RenderText(
-			"Error trying to get records from DB.")
+		fmt.Println(err)
+
+		msg = msg + " Error trying to get records from DB."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = character
 	}
-	return c.RenderJSON(character)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c CharacterCtrl) Update(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	character := c.parseCharacter()
 	// Ensure the Id is set.
 	character.Id = id
 	success, err := c.Txn.Update(&character)
 	if err != nil || success == 0 {
-		return c.RenderText("Unable to update character.")
+		fmt.Println(err)
+
+		msg = msg + " Unable to update character."
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Updated %d", id)
+		data["result_data"] = character
 	}
-	return c.RenderText("Updated %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c CharacterCtrl) Delete(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	success, err := c.Txn.Delete(&models.Character{Id: id})
 	if err != nil || success == 0 {
-		return c.RenderText("Failed to remove character")
+		fmt.Println(err)
+
+		msg = msg + " Failed to remove character"
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
-	return c.RenderText("Deleted %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }

@@ -32,63 +32,130 @@ func (c UserSettingCtrl) parseUserSetting() models.UserSetting {
 }
 
 func (c UserSettingCtrl) Add() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	userSetting := c.parseUserSetting()
 	fmt.Println(userSetting)
 	// Validate the model
 	userSetting.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		// Do something better here!
-		return c.RenderText("You have error in your user setting.")
+		msg = msg + " You have error in your user setting."
 	} else {
 		if err := c.Txn.Insert(&userSetting); err != nil {
 			fmt.Println(err)
-			return c.RenderText(
-				"Error inserting record into database!")
+
+			msg = msg + " Error inserting record into database!"
 		} else {
-			return c.RenderJSON(userSetting)
+			code = 200
+			msg = "Success."
+			data["result_data"] = userSetting
 		}
 	}
 
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c UserSettingCtrl) Get(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	userSetting := new(models.UserSetting)
 	err := c.Txn.SelectOne(userSetting,
 		`SELECT * FROM user_setting WHERE user_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
-		return c.RenderText("Error. user setting probably doesn't exist.")
+
+		msg = msg + " Error user setting probably doesn't exist."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = userSetting
 	}
-	return c.RenderJSON(userSetting)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c UserSettingCtrl) List() revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 	userSetting, err := c.Txn.Select(models.UserSetting{},
 		`SELECT * FROM user_setting WHERE user_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		return c.RenderText(
-			"Error trying to get records from DB.")
+		fmt.Println(err)
+
+		msg = msg + " Error trying to get records from DB."
+	} else {
+		code = 200
+		msg = "Success."
+		data["result_data"] = userSetting
 	}
-	return c.RenderJSON(userSetting)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c UserSettingCtrl) Update(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	userSetting := c.parseUserSetting()
 	// Ensure the Id is set.
 	userSetting.Id = id
 	success, err := c.Txn.Update(&userSetting)
 	if err != nil || success == 0 {
-		return c.RenderText("Unable to update user setting.")
+		fmt.Println(err)
+
+		msg = msg + " Unable to update user setting."
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Updated %d", id)
+		data["result_data"] = userSetting
 	}
-	return c.RenderText("Updated %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
 
 func (c UserSettingCtrl) Delete(id int64) revel.Result {
+	// JSON response
+	code := 400
+	msg := "Fail."
+	data := make(map[string]interface{})
+
 	success, err := c.Txn.Delete(&models.User{Id: id})
 	if err != nil || success == 0 {
-		return c.RenderText("Failed to remove user setting")
+		fmt.Println(err)
+
+		msg = msg + " Failed to remove user setting"
+	} else {
+		code = 200
+		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
-	return c.RenderText("Deleted %v", id)
+
+	data["result_code"] = code
+	data["result_msg"] = msg
+
+	return c.RenderJSON(data)
 }
