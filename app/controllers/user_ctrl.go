@@ -18,16 +18,21 @@ func defineUserTable(dbm *gorp.DbMap) {
 	// e.g. VARCHAR(25)
 	t.ColMap("email_mn").SetMaxSize(30)
 	t.ColMap("nickname_mn").SetMaxSize(30)
+	t.ColMap("password_ln").SetMaxSize(255)
 }
 
 func (c UserCtrl) parseUser() models.User {
 	var jsonData models.User
 
-	fmt.Println("parseUser")
-
 	fmt.Println(makeTimestamp())
 
 	c.Params.BindJSON(&jsonData)
+
+	fmt.Println(jsonData)
+
+	fmt.Println(jsonData.Password)
+	hash, _ := HashPassword(jsonData.Password)
+	jsonData.Password = hash
 
 	fmt.Println(jsonData)
 

@@ -10,6 +10,8 @@ RUN go get github.com/revel/revel
 RUN go get github.com/revel/cmd/revel
 RUN go get github.com/go-gorp/gorp
 RUN go get github.com/go-sql-driver/mysql
+RUN go get golang.org/x/crypto/bcrypt
+RUN go get golang.org/x/oauth2
 
 # Use the revel CLI to start up our application.
 ENTRYPOINT revel run ThisIsDisaster-API dev 9000
