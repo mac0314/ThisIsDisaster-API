@@ -1,21 +1,31 @@
 header {
-  margin-bottom: 50px;
+  margin-bottom: 0%;
 }
 
 footer {
-  padding: 140px 0 158px;
+  width: 100%;
+  padding: 10% 0 10%;
   background: #131313;
-  background-size: 1920px auto;
+  background-size: auto;
+}
+
+.copyright_area a {
+  padding-right: 2%;
 }
 
 section {
-  margin-bottom: 100px;
+  padding-top: 5%;
+  padding-bottom: 5%;
 }
 
 body, input, select, textarea, button, th, td {
   font-family: 'Arial', SimSun, sans-serif, 'Apple SD Gothic Neo';
   font-size: 12px;
   color: #555;
+}
+
+main {
+  margin-top: 0;
 }
 
 h1, h2 {
@@ -25,6 +35,8 @@ h1, h2 {
 a {
   color: #555;
   cursor: pointer;
+  margin-right: 16px;
+  text-decoration: none;
 }
 
 p {
@@ -39,11 +51,24 @@ p {
   align: center;
 }
 
+
+/* Bigger than 750 */
+@media (min-width: 750px) {
+  .inner img{
+    height: 3rem;
+    width: auto;
+  }
+
+  .inner > .title_img{
+    text-align: left;
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
+}
+
 .visual_title a img{
   width: auto;
   height: auto;
-  max-width: 300px;
-  margin-left: 300px;
 }
 
 .main_visual_area .visual_title {
@@ -56,26 +81,17 @@ p {
   z-index: 2;
   width: 28.1%;
   height: 18%;
-  background: url("/public/img/visual_title.png") no-repeat;
+  background: url("/public/img/title_img.png") no-repeat;
   background-size: 100%;
 }
 
-.top_wrap .inner2 .communication_area {
-  float: left;
-  display: inline-block;
-}
-
-.top_wrap .inner2 .social_area {
-  float: right;
-  display: inline-block;
-}
 
 .foot_wrap .inner2 .social_area {
-  margin-bottom: 40px;
+  margin-bottom: 7%;
 }
 
 .foot_wrap .inner2 .copyright_area .copyright {
-  margin-bottom: 7px;
+  margin-bottom: 3%;
 }
 
 .foot_wrap .inner2 .copyright_area {
@@ -85,8 +101,6 @@ p {
 
 .foot_wrap .inner2 .copyright_area a {
   display: inline-block;
-  padding-right: 10px;
-  margin-right: 10px;
   border-right: 1px solid #808080;
 }
 
@@ -95,19 +109,20 @@ p {
 }
 
 .inner {
-  margin-left: 30px;
+  margin-left: 5%;
 }
 
 
 .inner2 {
-  max-width: 1700px;
-  width: 800px;
-  margin-left: 30px;
-  padding: 0 55px 0 55px;
+  margin-left: 5%;
+}
+
+main #content {
+  margin: 0;
 }
 
 #content {
-  margin-bottom: 100px;
+  margin-bottom: 5%;
 }
 
 .blind {

@@ -1,2 +1,116 @@
 @import url("basic.css");
 @import url("navbar.css");
+
+.swiper-container {
+  width: 100%;
+  height: 100%;
+  border-top: 1px solid #d8d8d8;
+}
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.section_heading,
+.section_description {
+  margin-bottom: 1.2rem;
+}
+
+.plusfriend_img {
+  max-width: 60%;
+}
+
+.release_area {
+  text-align: center;
+  background-color: #fff;
+}
+
+.main_visual_area, .plusfriend_area, .feedback_area{
+  border-bottom: 1px solid #d8d8d8;
+  text-align: center;
+  background-color: #fff;
+}
+
+.feedback_area {
+  margin-bottom: 0;
+}
+
+.phone {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.hero_heading{
+  font-weight: bold
+}
+
+.main {
+  background: url("/public/img/kill_monster.gif") no-repeat;
+  background-size: 120%;
+}
+
+/* Bigger than 550 */
+@media (min-width: 550px) {
+
+  .phone {
+    max-height: 500px;
+  }
+}
+
+/* Bigger than 750 */
+@media (min-width: 750px) {
+
+  .hero_heading {
+    font-size: 4rem;
+  }
+  .section_description {
+    max-width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .phone {
+    max-height: 510px;
+  }
+  .help_img img{
+    max-width: 50%;
+    max-height: 500px;
+  }
+  .inner img{
+    height: 3rem;
+    width: auto;
+  }
+
+  .inner > .title_img{
+    text-align: left;
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
+}
+.release_area {
+  background: transparent;
+}
+
+.release_area .container {
+  background: transparent;
+}
+
+/* Bigger than 1000 */
+@media (min-width: 1000px) {
+
+}

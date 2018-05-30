@@ -20,7 +20,9 @@ GET     /admin                                      Admin.Index
 # API routes
 
 GET     /api/oauth2/google                                      OAuth.GoogleAuth
-GET     /api/oauth2/callback                                      OAuth.Callback
+GET     /api/oauth2/facebook                                      OAuth.FacebookAuth
+GET     /api/oauth2/github                                      OAuth.GithubAuth
+GET     /api/oauth2/google/callback                                      OAuth.Callback
 
 POST    /api/smtp                                   SMTP.Index
 GET     /api/test                                   TEST.Index

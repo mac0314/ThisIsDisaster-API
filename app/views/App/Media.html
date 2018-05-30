@@ -8,24 +8,30 @@
   <link rel="stylesheet" href="/public/css/media.css">
 </head>
 <body>
-  <header>
-    {{template "partials/header.html" .}}
-  </header>
+  <div id="wrap" class="main" role="toolbar">
+    <header id="header" class role="banner">
+      {{template "partials/header.html" .}}
+    </header>
 
-  <div class="container">
-    <h2>Media</h2>
+    <main id="content" role="main">
+      <section class="test">
+        <div class="container">
+          <h1>Media</h1>
+        </div>
+      </section>
+
+      <section class="test">
+        <div class="container">
+          <h2>
+            내용 없음
+          </h2>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      {{template "partials/footer.html" .}}
+    </footer>
   </div>
-
-  <div class="container">
-    <div class="row">
-      <div class="span6">
-        {{template "partials/flash.html" .}}
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    {{template "partials/footer.html" .}}
-  </footer>
 </body>
 </html>

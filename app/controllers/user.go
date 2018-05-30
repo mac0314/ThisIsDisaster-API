@@ -12,7 +12,7 @@ type User struct {
 
 func (c User) Index() revel.Result {
 	// TODO modify demo data
-	var code string = "200"
+	var code int = 200
 	var msg string = "Success"
 	var nickname string = "mac"
 
@@ -33,14 +33,16 @@ func (c User) Index() revel.Result {
 
 func (c User) Lobby() revel.Result {
 	// TODO modify demo data
-	var code string = "200"
+	var code int = 200
 	var msg string = "Success"
 	var nickname string = "mac"
+	var rType string = "lobby"
 
 	// JSON response
 	response := make(map[string]interface{})
 	response["result_code"] = code
 	response["result_msg"] = msg
+	response["response_type"] = rType
 	data := make(map[string]interface{})
 
 	data["nickname"] = nickname
@@ -56,7 +58,7 @@ func (c User) Lobby() revel.Result {
 
 func (c User) Costume() revel.Result {
 	// TODO modify demo data
-	//var code string = "200"
+	//var code int = 200
 	//var msg string = "Success"
 
 	/*
@@ -84,7 +86,7 @@ func (c User) Costume() revel.Result {
 	// Demo data
 	testData := `
 	{
-			"result_code": "200",
+			"result_code": 200,
 			"result_msg": "Success",
 			"result_data": {
 				"gold": 100000,
@@ -115,7 +117,7 @@ func (c User) Score() revel.Result {
 	// Demo data
 	testData := `
 	{
-			"result_code": "200",
+			"result_code": 200,
 			"result_msg": "Success",
 			"result_data": {
 				"achievement_list": [
@@ -167,7 +169,7 @@ func (c User) Matching() revel.Result {
 	// Demo data
 	testData := `
 	{
-		"result_code": "200",
+		"result_code": 200,
 		"result_msg": "Success"
 	}
 	`

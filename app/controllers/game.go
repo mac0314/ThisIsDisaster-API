@@ -14,8 +14,9 @@ func (c Game) SinglePlayResult() revel.Result {
 	// TODO modify demo data
 	testData := `
   {
-    "result_code": "200",
+    "result_code": 200,
     "result_msg": "Success",
+		"response_type": "SingleResult",
     "result_data": {
       "mode": "normal",
       "exp": "3000",
@@ -41,27 +42,32 @@ func (c Game) MultiPlayLobby() revel.Result {
 	// TODO modify demo data
 	testData := `
   {
-    "result_code": "200",
+    "result_code": 200,
     "result_msg": "Success",
+		"response_type": "MultiLobby",
     "result_data": {
       "name": "mac",
       "level": "15",
 			"role": "client",
+			"ip": "192.168.1.9"
       "user_list":[
         {
 					"name": "fuck",
 		      "level": "20",
-					"role": "host"
+					"role": "host",
+					"ip": "192.168.1.10"
 				},
 				{
 					"name": "helloworld",
 		      "level": "15",
-					"role": "client"
+					"role": "client",
+					"ip": "192.168.1.11"
 				},
 				{
 					"name": "happyface",
 		      "level": "10",
-					"role": "client"
+					"role": "client",
+					"ip": "192.168.1.12"
 				}
       ]
     }
@@ -80,8 +86,9 @@ func (c Game) MultiPlayResult() revel.Result {
 	// TODO modify demo data
 	testData := `
   {
-    "result_code": "200",
+    "result_code": 200,
     "result_msg": "Success",
+		"response_type": "MultiResult",
     "result_data": {
       "mode": "normal",
       "exp": "3000",

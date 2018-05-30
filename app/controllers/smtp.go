@@ -27,15 +27,16 @@ func (c SMTP) Index() revel.Result {
 	body := "메일 테스트입니다\r\n"
 	message := []byte(headerSubject + headerBlank + body)
 
-	var code string = "200"
+	var code int = 200
 	var msg string = "Success"
+	var rType string = "SMTP"
 
 	// 메일 보내기
 	err := smtp.SendMail("smtp.gmail.com:587", auth, from, to, message)
 	if err != nil {
 		panic(err)
 
-		code = "400"
+		code = 400
 		msg = "Fail"
 	}
 
@@ -43,6 +44,7 @@ func (c SMTP) Index() revel.Result {
 	data := make(map[string]interface{})
 	data["result_code"] = code
 	data["result_msg"] = msg
+	data["response_type"] = rType
 
 	return c.RenderJSON(data)
 }

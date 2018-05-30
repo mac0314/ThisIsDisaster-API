@@ -15,8 +15,9 @@ func (c Store) Index() revel.Result {
 	// Demo data
 	testData := `
 	{
-			"result_code": "200",
+			"result_code": 200,
 			"result_msg": "Success",
+			"result_msg": "Store",
 			"result_data": {
 				"costume_list": [
 					{
@@ -59,13 +60,15 @@ func (c Store) Index() revel.Result {
 
 func (c Store) BuyCostume() revel.Result {
 	// TODO modify demo data
-	var code string = "200"
+	var code int = 200
 	var msg string = "Success"
+	var rType string = "BuyCostume"
 
 	// JSON response
 	response := make(map[string]interface{})
 	response["result_code"] = code
 	response["result_msg"] = msg
+	response["response_type"] = rType
 
 	return c.RenderJSON(response)
 }
