@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/revel/revel"
 )
 
@@ -9,7 +11,21 @@ type App struct {
 }
 
 func (c App) Index() revel.Result {
-	return c.Render()
+	fmt.Println(c.Session["email"])
+	fmt.Println(c.Session["role"])
+
+	delete(c.Session, "email")
+	delete(c.Session, "role")
+
+	var signinCheck bool
+
+	if c.Session["email"] != "" {
+		signinCheck = true
+	} else {
+		signinCheck = false
+	}
+
+	return c.Render(signinCheck)
 }
 
 func (c App) News() revel.Result {
@@ -25,6 +41,10 @@ func (c App) Media() revel.Result {
 }
 
 func (c App) Community() revel.Result {
+	return c.Render()
+}
+
+func (c App) MultiPlay() revel.Result {
 	return c.Render()
 }
 

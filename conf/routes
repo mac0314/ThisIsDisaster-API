@@ -13,16 +13,23 @@ GET     /news                                       App.News
 GET     /overview                                   App.Overview
 GET     /media                                      App.Media
 GET     /community                                  App.Community
+GET     /multiplay                                  App.MultiPlay
 
 GET     /admin                                      Admin.Index
+GET     /admin/members                                      Admin.Members
+GET     /admin/score                                      Admin.Score
+GET     /admin/games                                      Admin.Games
+GET     /admin/feedbacks                                      Admin.Feedbacks
+
+GET     /firebase                                   Firebase.Index
 
 
 # API routes
 
-GET     /api/oauth2/google                                      OAuth.GoogleAuth
-GET     /api/oauth2/facebook                                      OAuth.FacebookAuth
-GET     /api/oauth2/github                                      OAuth.GithubAuth
-GET     /api/oauth2/google/callback                                      OAuth.Callback
+GET     /api/oauth2/google                          OAuth.GoogleAuth
+GET     /api/oauth2/facebook                        OAuth.FacebookAuth
+GET     /api/oauth2/github                          OAuth.GithubAuth
+GET     /api/oauth2/google/callback                 OAuth.Callback
 
 POST    /api/smtp                                   SMTP.Index
 GET     /api/test                                   TEST.Index
@@ -36,6 +43,9 @@ POST    /api/user/matching                          User.Matching
 GET     /api/game/singleplay/result                 Game.SinglePlayResult
 GET     /api/game/multiplay/result                  Game.MultiPlayResult
 GET     /api/game/multiplay/lobby                   Game.MultiPlayLobby
+POST    /api/game/multiplay                         Game.MultiPlay
+POST    /api/game/multiplay/start                         Game.StartGame
+POST    /api/game/multiplay/leave                         Game.LeaveMultiPlayLobby
 
 GET     /api/store                                  Store.Index
 POST    /api/store                                  Store.BuyCostume

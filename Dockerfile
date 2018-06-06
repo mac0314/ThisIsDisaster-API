@@ -10,6 +10,9 @@ RUN go get github.com/revel/revel
 RUN go get github.com/revel/cmd/revel
 RUN go get github.com/go-gorp/gorp
 RUN go get github.com/go-sql-driver/mysql
+RUN go get github.com/go-redis/redis
+RUN go get firebase.google.com/go
+RUN go get google.golang.org/api/option
 RUN go get golang.org/x/crypto/bcrypt
 RUN go get golang.org/x/oauth2
 

@@ -7,6 +7,21 @@
 
   <link rel="stylesheet" href="/public/css/index.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css">
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css" />
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyD0LMyaCIQAjYwLZL7jssQNfUCPAyOQay0",
+      authDomain: "thisisdisaster-204407.firebaseapp.com",
+      databaseURL: "https://thisisdisaster-204407.firebaseio.com",
+      projectId: "thisisdisaster-204407",
+      storageBucket: "thisisdisaster-204407.appspot.com",
+      messagingSenderId: "791663390275"
+    };
+    firebase.initializeApp(config);
+  </script>
 </head>
 <body>
   <div id="wrap" class="main" role="toolbar">
@@ -17,10 +32,6 @@
 
     <main id="content" role="main">
       <h1 class="blind">This is Disaster MAIN</h1>
-
-      <section class="test blind">
-        <a href="/api/oauth2/google">Google Login</a>
-      </section>
 
       <section class="release_area">
         <div class="container">
@@ -35,6 +46,14 @@
           <a class="button" href="https://www.dropbox.com/home/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/2018/This%20is%20Disaster/release">
             TID 시작하기
           </a>
+        </div>
+      </section>
+
+
+      <section class="member_area">
+        <div class="container">
+          <div id="firebaseui-auth-container">
+          </div>
         </div>
       </section>
 
@@ -126,6 +145,28 @@
         autoplay: 2500,
         autoplayDisableOnInteraction: false
     })
+
+    // FirebaseUI config.
+    var uiConfig = {
+      signInSuccessUrl: 'http://localhost:9000',
+      signInOptions: [
+        // Leave the lines as is for the providers you want to offer your users.
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+        firebase.auth.EmailAuthProvider.PROVIDER_ID
+      ],
+      // Terms of service url.
+      tosUrl: 'http://localhost:9000/service'
+    };
+
+    // Initialize the FirebaseUI Widget using Firebase.
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+    // The start method will wait until the DOM is loaded.
+    ui.start('#firebaseui-auth-container', uiConfig);
+
+  </script>
+  <script type="text/javascript">
+
   </script>
 </body>
 </html>

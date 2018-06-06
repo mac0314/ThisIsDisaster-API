@@ -10,23 +10,25 @@
 <body>
   <div id="wrap" class="main" role="toolbar">
     <header id="header" class role="banner">
-      {{template "partials/admin/header.html" .}}
+      {{template "partials/header.html" .}}
     </header>
 
     <main id="content" role="main">
-      <section class="test">
+      <section class="lobby">
         <div class="container">
-          <h1>Admin</h1>
+          <h1>MultiPlayLobby</h1>
         </div>
       </section>
 
       <section class="test">
         <div class="container">
-          <div class="button" onclick="submitFeedback()">
+
+          <div class="button" onclick="submitMatching()">
+            Matching
           </div>
-          <h2>
-            내용 없음
-          </h2>
+          <div class="button" onclick="getMatching()">
+            Load
+          </div>
         </div>
       </section>
     </main>
@@ -38,8 +40,8 @@
   <script>
 
 
-  var submitFeedback = function(){
-    console.log("submitFeedback");
+  var submitMatching = function(){
+    console.log("submitMatching");
       var httpRequest;
       if (window.XMLHttpRequest) { // 모질라, 사파리등 그외 브라우저, ...
           httpRequest = new XMLHttpRequest();
@@ -57,7 +59,33 @@
               }
           }
       };
-      httpRequest.open('GET', location.origin + '/api/notices', true);
+
+      httpRequest.open('POST', location.origin + '/api/game/multiplay', true);
+      httpRequest.setRequestHeader("Content-type", "application/json");
+      httpRequest.send();
+  }
+
+  var getMatching = function(){
+    console.log("getMatching");
+      var httpRequest;
+      if (window.XMLHttpRequest) { // 모질라, 사파리등 그외 브라우저, ...
+          httpRequest = new XMLHttpRequest();
+      } else if (window.ActiveXObject) { // IE 8 이상
+          httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      httpRequest.onreadystatechange = function(){
+          if (httpRequest.readyState == 4 && httpRequest.status == 200){
+              var resultJson = JSON.parse(httpRequest.responseText);
+              if(resultJson.result_code == 200){
+                console.log(resultJson)
+                  alert(resultJson);
+              }else{
+                  alert('피드백 전송에 실패하였습니다.');
+              }
+          }
+      };
+
+      httpRequest.open('GET', location.origin + '/api/game/multiplay/lobby', true);
       httpRequest.setRequestHeader("Content-type", "application/json");
       httpRequest.send();
   }

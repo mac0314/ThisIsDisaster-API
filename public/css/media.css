@@ -1,2 +1,53 @@
 @import url("basic.css");
 @import url("navbar.css");
+
+
+.content-imgs {
+  overflow: hidden;
+  margin: auto;
+  /*visibility: hidden;*/
+}
+
+.content-imgs {
+  visibility: visible;
+}
+
+.square {
+  position: relative;
+  width: 32.7333%;
+  float:left;
+  margin: 0.3%;
+}
+
+.square:after, .myimage-square:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.content img {
+  position: absolute;
+  top: -1000px;
+  left: -1000px;
+  bottom: -1000px;
+  right: -1000px;
+  margin: auto;
+  width: auto;
+  height: auto;
+}
+
+.content img.tall {
+  width: 100%;
+}
+
+.content img.wide {
+  height: 100%;
+}

@@ -1,12 +1,16 @@
 <div class="navbar">
   <div class="gnb_wrap" id="gnb_wrap">
     <div class="inner">
-      <h1 class="logo">
-        <a href="/">
-          <!--TD-->
-        </a>
-      </h1>
-      {{template "partials/admin/navigation.html" .}}
+      <div class="row">
+        <div class="title_img one-third column">
+          <a href="/admin">
+            <img class="logo" src="/public/img/logo.png" alt="">
+          </a>
+        </div>
+        <div class="two-third">
+          {{template "partials/admin/navigation.html" .}}
+        </div>
+      </div>
     </div>
   </div>
 </div>

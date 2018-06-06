@@ -16,7 +16,12 @@
     <main id="content" role="main">
       <section class="test">
         <div class="container">
-          <h1>Admin</h1>
+          <div>
+            <h1>Admin</h1>
+          </div>
+          <div>
+            <h2>Feedback</h2>
+          </div>
         </div>
       </section>
 
@@ -57,7 +62,7 @@
               }
           }
       };
-      httpRequest.open('GET', location.origin + '/api/notices', true);
+      httpRequest.open('GET', location.origin + '/api/feedbacks', true);
       httpRequest.setRequestHeader("Content-type", "application/json");
       httpRequest.send();
   }
