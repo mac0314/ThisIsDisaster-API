@@ -8,6 +8,7 @@ ADD . /go/src/ThisIsDisaster-API
 # Install revel and the revel CLI.
 RUN go get github.com/revel/revel
 RUN go get github.com/revel/cmd/revel
+RUN go get github.com/revel/cron
 RUN go get github.com/go-gorp/gorp
 RUN go get github.com/go-sql-driver/mysql
 RUN go get github.com/go-redis/redis

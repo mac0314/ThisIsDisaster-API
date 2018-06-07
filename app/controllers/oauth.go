@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"ThisIsDisaster-API/app/routes"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
-	"server/app/routes"
 
 	"github.com/revel/revel"
 	"golang.org/x/oauth2"
