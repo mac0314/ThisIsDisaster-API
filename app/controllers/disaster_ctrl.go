@@ -8,38 +8,41 @@ import (
 	"github.com/revel/revel"
 )
 
-type UserSettingCtrl struct {
+type DisasterCtrl struct {
 	GorpController
 }
 
-func defineUserSettingTable(dbm *gorp.DbMap) {
+func defineDisasterTable(dbm *gorp.DbMap) {
 	// set "id" as primary key and autoincrement
-	dbm.AddTableWithName(models.UserSetting{}, "user_setting").SetKeys(true, "user_id")
+	t := dbm.AddTableWithName(models.Disaster{}, "disaster").SetKeys(true, "disaster_id")
+	// e.g. VARCHAR(25)
+	t.ColMap("name_mn").SetMaxSize(30)
+	t.ColMap("info_ln").SetMaxSize(255)
 }
 
-func (c UserSettingCtrl) parseUserSetting() models.UserSetting {
-	var jsonData models.UserSetting
+func (c DisasterCtrl) parseDisaster() models.Disaster {
+	var jsonData models.Disaster
 
 	c.Params.BindJSON(&jsonData)
 
 	return jsonData
 }
 
-func (c UserSettingCtrl) Add() revel.Result {
+func (c DisasterCtrl) Add() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := c.parseUserSetting()
+	disaster := c.parseDisaster()
 
-	userSetting.Update = makeTimestamp()
+	disaster.Update = makeTimestamp()
 
-	userSetting.Validate(c.Validation)
+	disaster.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		msg = msg + " You have error in your user setting."
+		msg = msg + " You have error in your disaster."
 	} else {
-		if err := c.Txn.Insert(&userSetting); err != nil {
+		if err := c.Txn.Insert(&disaster); err != nil {
 			fmt.Println(err)
 
 			msg = msg + " Error inserting record into database!"
@@ -56,33 +59,33 @@ func (c UserSettingCtrl) Add() revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Get(id int64) revel.Result {
+func (c DisasterCtrl) Get(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := new(models.UserSetting)
-	err := c.Txn.SelectOne(userSetting,
-		`SELECT * FROM user_setting WHERE user_id = ?`, id)
+	disaster := new(models.Disaster)
+	err := c.Txn.SelectOne(disaster,
+		`SELECT * FROM disaster WHERE disaster_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
 
-		msg = msg + " Error user setting probably doesn't exist."
+		msg = msg + " Error disaster probably doesn't exist."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = userSetting
+		response["result_data"] = disaster
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_USER_SETTING
+	response["result_type"] = RESULT_TYPE_DISASTER
 
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) List() revel.Result {
+func (c DisasterCtrl) List() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
@@ -90,8 +93,8 @@ func (c UserSettingCtrl) List() revel.Result {
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
-	userSetting, err := c.Txn.Select(models.UserSetting{},
-		`SELECT * FROM user_setting WHERE user_id > ? LIMIT ?`, lastId, limit)
+	disaster, err := c.Txn.Select(models.Disaster{},
+		`SELECT * FROM disaster WHERE disaster_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
 		fmt.Println(err)
 
@@ -99,30 +102,30 @@ func (c UserSettingCtrl) List() revel.Result {
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = userSetting
+		response["result_data"] = disaster
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_USER_SETTINGS
+	response["result_type"] = RESULT_TYPE_DISASTERS
 
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Update(id int64) revel.Result {
+func (c DisasterCtrl) Update(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := c.parseUserSetting()
+	disaster := c.parseDisaster()
 	// Ensure the Id is set.
-	userSetting.Id = id
-	success, err := c.Txn.Update(&userSetting)
+	disaster.Id = id
+	success, err := c.Txn.Update(&disaster)
 	if err != nil || success == 0 {
 		fmt.Println(err)
 
-		msg = msg + " Unable to update user setting."
+		msg = msg + " Unable to update disaster."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
@@ -135,17 +138,17 @@ func (c UserSettingCtrl) Update(id int64) revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Delete(id int64) revel.Result {
+func (c DisasterCtrl) Delete(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	success, err := c.Txn.Delete(&models.User{Id: id})
+	success, err := c.Txn.Delete(&models.Disaster{Id: id})
 	if err != nil || success == 0 {
 		fmt.Println(err)
 
-		msg = msg + " Failed to remove user setting"
+		msg = msg + " Failed to remove disaster"
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)

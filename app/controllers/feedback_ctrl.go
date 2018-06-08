@@ -24,26 +24,21 @@ func defineFeedbackTable(dbm *gorp.DbMap) {
 func (c FeedbackCtrl) parseFeedback() models.Feedback {
 	var jsonData models.Feedback
 
-	fmt.Println("parseFeedback")
-
-	fmt.Println(makeTimestamp())
-
 	c.Params.BindJSON(&jsonData)
-
-	fmt.Println(jsonData)
 
 	return jsonData
 }
 
 func (c FeedbackCtrl) Add() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	feedback := c.parseFeedback()
-	fmt.Println(feedback)
-	// Validate the model
+
+	feedback.Create = makeTimestamp()
+
 	feedback.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your feedback."
@@ -53,23 +48,23 @@ func (c FeedbackCtrl) Add() revel.Result {
 
 			msg = msg + " Error inserting record into database!"
 		} else {
-			code = 200
+			code = RESULT_CODE_SUCCESS
 			msg = "Success."
-			data["result_data"] = feedback
 		}
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c FeedbackCtrl) Get(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	feedback := new(models.Feedback)
 	err := c.Txn.SelectOne(feedback,
@@ -79,22 +74,23 @@ func (c FeedbackCtrl) Get(id int64) revel.Result {
 
 		msg = msg + " Error feedback probably doesn't exist."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = feedback
+		response["result_data"] = feedback
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_FEEDBACK
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c FeedbackCtrl) List() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
@@ -105,22 +101,23 @@ func (c FeedbackCtrl) List() revel.Result {
 
 		msg = msg + " Error trying to get records from DB."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = feedback
+		response["result_data"] = feedback
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_FEEDBACKS
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c FeedbackCtrl) Update(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	feedback := c.parseFeedback()
 	// Ensure the Id is set.
@@ -131,22 +128,22 @@ func (c FeedbackCtrl) Update(id int64) revel.Result {
 
 		msg = msg + " Unable to update feedback."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
-		data["result_data"] = feedback
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c FeedbackCtrl) Delete(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	success, err := c.Txn.Delete(&models.Feedback{Id: id})
 	if err != nil || success == 0 {
@@ -154,12 +151,13 @@ func (c FeedbackCtrl) Delete(id int64) revel.Result {
 
 		msg = msg + " Failed to remove feedback"
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }

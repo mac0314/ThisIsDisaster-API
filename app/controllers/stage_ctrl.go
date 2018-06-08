@@ -22,26 +22,21 @@ func defineStageTable(dbm *gorp.DbMap) {
 func (c StageCtrl) parseStage() models.Stage {
 	var jsonData models.Stage
 
-	fmt.Println("parseStage")
-
-	fmt.Println(makeTimestamp())
-
 	c.Params.BindJSON(&jsonData)
-
-	fmt.Println(jsonData)
 
 	return jsonData
 }
 
 func (c StageCtrl) Add() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	stage := c.parseStage()
-	fmt.Println(stage)
-	// Validate the model
+
+	stage.Create = makeTimestamp()
+
 	stage.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your stage."
@@ -51,23 +46,23 @@ func (c StageCtrl) Add() revel.Result {
 
 			msg = msg + " Error inserting record into database!"
 		} else {
-			code = 200
+			code = RESULT_CODE_SUCCESS
 			msg = "Success."
-			data["result_data"] = stage
 		}
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c StageCtrl) Get(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	stage := new(models.Stage)
 	err := c.Txn.SelectOne(stage,
@@ -77,22 +72,23 @@ func (c StageCtrl) Get(id int64) revel.Result {
 
 		msg = msg + "Error. stage probably doesn't exist."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = stage
+		response["result_data"] = stage
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_STAGE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c StageCtrl) List() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
@@ -101,22 +97,23 @@ func (c StageCtrl) List() revel.Result {
 	if err != nil {
 		msg = msg + "Error trying to get records from DB."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = stage
+		response["result_data"] = stage
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_STAGES
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c StageCtrl) Update(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	stage := c.parseStage()
 	// Ensure the Id is set.
@@ -125,32 +122,34 @@ func (c StageCtrl) Update(id int64) revel.Result {
 	if err != nil || success == 0 {
 		msg = msg + " Unable to update stage."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c StageCtrl) Delete(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	success, err := c.Txn.Delete(&models.Stage{Id: id})
 	if err != nil || success == 0 {
 		msg = msg + " Failed to remove stage"
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }

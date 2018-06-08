@@ -8,38 +8,38 @@ import (
 	"github.com/revel/revel"
 )
 
-type UserSettingCtrl struct {
+type HaveHeadCostumeCtrl struct {
 	GorpController
 }
 
-func defineUserSettingTable(dbm *gorp.DbMap) {
+func defineHaveHeadCostumeTable(dbm *gorp.DbMap) {
 	// set "id" as primary key and autoincrement
-	dbm.AddTableWithName(models.UserSetting{}, "user_setting").SetKeys(true, "user_id")
+	t := dbm.AddTableWithName(models.HaveHeadCostume{}, "have_head_costume").SetKeys(true, "have_hc_id")
+
+	t.ColMap("state_sn").SetMaxSize(20)
 }
 
-func (c UserSettingCtrl) parseUserSetting() models.UserSetting {
-	var jsonData models.UserSetting
+func (c HaveHeadCostumeCtrl) parseHaveHeadCostume() models.HaveHeadCostume {
+	var jsonData models.HaveHeadCostume
 
 	c.Params.BindJSON(&jsonData)
 
 	return jsonData
 }
 
-func (c UserSettingCtrl) Add() revel.Result {
+func (c HaveHeadCostumeCtrl) Add() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := c.parseUserSetting()
+	haveHeadCostume := c.parseHaveHeadCostume()
 
-	userSetting.Update = makeTimestamp()
-
-	userSetting.Validate(c.Validation)
+	haveHeadCostume.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		msg = msg + " You have error in your user setting."
+		msg = msg + " You have error in your have_head_costume."
 	} else {
-		if err := c.Txn.Insert(&userSetting); err != nil {
+		if err := c.Txn.Insert(&haveHeadCostume); err != nil {
 			fmt.Println(err)
 
 			msg = msg + " Error inserting record into database!"
@@ -56,33 +56,33 @@ func (c UserSettingCtrl) Add() revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Get(id int64) revel.Result {
+func (c HaveHeadCostumeCtrl) Get(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := new(models.UserSetting)
-	err := c.Txn.SelectOne(userSetting,
-		`SELECT * FROM user_setting WHERE user_id = ?`, id)
+	haveHeadCostume := new(models.HaveHeadCostume)
+	err := c.Txn.SelectOne(haveHeadCostume,
+		`SELECT * FROM have_head_costume WHERE have_hc_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
 
-		msg = msg + " Error user setting probably doesn't exist."
+		msg = msg + " Error have_head_costume probably doesn't exist."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = userSetting
+		response["result_data"] = haveHeadCostume
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_USER_SETTING
+	response["result_type"] = RESULT_TYPE_HAVE_HEAD_COSTUME
 
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) List() revel.Result {
+func (c HaveHeadCostumeCtrl) List() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
@@ -90,8 +90,8 @@ func (c UserSettingCtrl) List() revel.Result {
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
-	userSetting, err := c.Txn.Select(models.UserSetting{},
-		`SELECT * FROM user_setting WHERE user_id > ? LIMIT ?`, lastId, limit)
+	haveHeadCostume, err := c.Txn.Select(models.HaveHeadCostume{},
+		`SELECT * FROM have_head_costume WHERE have_hc_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
 		fmt.Println(err)
 
@@ -99,30 +99,30 @@ func (c UserSettingCtrl) List() revel.Result {
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = userSetting
+		response["result_data"] = haveHeadCostume
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_USER_SETTINGS
+	response["result_type"] = RESULT_TYPE_HAVE_HEAD_COSTUMES
 
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Update(id int64) revel.Result {
+func (c HaveHeadCostumeCtrl) Update(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := c.parseUserSetting()
+	haveHeadCostume := c.parseHaveHeadCostume()
 	// Ensure the Id is set.
-	userSetting.Id = id
-	success, err := c.Txn.Update(&userSetting)
+	haveHeadCostume.Id = id
+	success, err := c.Txn.Update(&haveHeadCostume)
 	if err != nil || success == 0 {
 		fmt.Println(err)
 
-		msg = msg + " Unable to update user setting."
+		msg = msg + " Unable to update have_head_costume."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
@@ -135,17 +135,17 @@ func (c UserSettingCtrl) Update(id int64) revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Delete(id int64) revel.Result {
+func (c HaveHeadCostumeCtrl) Delete(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	success, err := c.Txn.Delete(&models.User{Id: id})
+	success, err := c.Txn.Delete(&models.HaveHeadCostume{Id: id})
 	if err != nil || success == 0 {
 		fmt.Println(err)
 
-		msg = msg + " Failed to remove user setting"
+		msg = msg + " Failed to remove have_head_costume"
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)

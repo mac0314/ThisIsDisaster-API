@@ -13,7 +13,7 @@
   <script>
     // Initialize Firebase
     var config = {
-      apiKey: "AIzaSyD0LMyaCIQAjYwLZL7jssQNfUCPAyOQay0",
+      apiKey: "AIzaSyDfMmE9lSlx5qkWErWvPaz-uWyv51Z3r_c",
       authDomain: "thisisdisaster-204407.firebaseapp.com",
       databaseURL: "https://thisisdisaster-204407.firebaseio.com",
       projectId: "thisisdisaster-204407",
@@ -43,7 +43,7 @@
               지금, This is Disaster를 시작하세요!
             </p>
           </div>
-          <a class="button" href="https://www.dropbox.com/home/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/2018/This%20is%20Disaster/release">
+          <a class="button" href="https://www.dropbox.com/sh/z1use0h3yodgtk6/AACoqcjWTSXxj9TKG_JLmLCfa/2018/This%20is%20Disaster/release?dl=0">
             TID 시작하기
           </a>
         </div>
@@ -53,6 +53,9 @@
       <section class="member_area">
         <div class="container">
           <div id="firebaseui-auth-container">
+            <div id="sign-in-status"></div>
+            <div id="sign-in"></div>
+            <div id="account-details"></div>
           </div>
         </div>
       </section>
@@ -149,6 +152,7 @@
     // FirebaseUI config.
     var uiConfig = {
       signInSuccessUrl: 'http://localhost:9000',
+      signInFlow: 'popup',
       signInOptions: [
         // Leave the lines as is for the providers you want to offer your users.
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -163,6 +167,50 @@
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
     // The start method will wait until the DOM is loaded.
     ui.start('#firebaseui-auth-container', uiConfig);
+
+    LoadApp = function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var uid = user.uid;
+            var phoneNumber = user.phoneNumber;
+            var providerData = user.providerData;
+            user.getIdToken().then(function(accessToken) {
+              /*
+              document.getElementById('sign-in-status').textContent = 'Signed in';
+              document.getElementById('sign-in').textContent = 'Sign out';
+              document.getElementById('account-details').textContent = JSON.stringify({
+                displayName: displayName,
+                email: email,
+                emailVerified: emailVerified,
+                phoneNumber: phoneNumber,
+                photoURL: photoURL,
+                uid: uid,
+                accessToken: accessToken,
+                providerData: providerData
+              }, null, '  ');
+              */
+            });
+          } else {
+            /*
+            // User is signed out.
+            document.getElementById('sign-in-status').textContent = 'Signed out';
+            document.getElementById('sign-in').textContent = 'Sign in';
+            document.getElementById('account-details').textContent = 'null';
+            */
+          }
+        }, function(error) {
+          console.log(error);
+        });
+      };
+
+      window.addEventListener('load', function() {
+        LoadApp()
+      });
 
   </script>
   <script type="text/javascript">

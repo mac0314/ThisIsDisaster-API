@@ -36,20 +36,17 @@ func (c ItemCtrl) parseItem() models.Item {
 
 	c.Params.BindJSON(&jsonData)
 
-	fmt.Println(jsonData)
-
 	return jsonData
 }
 
 func (c ItemCtrl) Add() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	item := c.parseItem()
-	fmt.Println(item)
-	// Validate the model
+
 	item.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your item."
@@ -59,23 +56,23 @@ func (c ItemCtrl) Add() revel.Result {
 
 			msg = msg + " Error inserting record into database!"
 		} else {
-			code = 200
+			code = RESULT_CODE_SUCCESS
 			msg = "Success."
-			data["result_data"] = item
 		}
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c ItemCtrl) Get(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	item := new(models.Item)
 	err := c.Txn.SelectOne(item,
@@ -85,22 +82,23 @@ func (c ItemCtrl) Get(id int64) revel.Result {
 
 		msg = msg + " Error item probably doesn't exist."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = item
+		response["result_data"] = item
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_ITEM
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c ItemCtrl) List() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
@@ -111,22 +109,23 @@ func (c ItemCtrl) List() revel.Result {
 
 		msg = msg + " Error trying to get records from DB."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = item
+		response["result_data"] = item
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_ITEMS
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c ItemCtrl) Update(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	item := c.parseItem()
 	// Ensure the Id is set.
@@ -137,22 +136,22 @@ func (c ItemCtrl) Update(id int64) revel.Result {
 
 		msg = msg + " Unable to update item."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
-		data["result_data"] = item
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c ItemCtrl) Delete(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	success, err := c.Txn.Delete(&models.Item{Id: id})
 	if err != nil || success == 0 {
@@ -160,21 +159,22 @@ func (c ItemCtrl) Delete(id int64) revel.Result {
 
 		msg = msg + " Failed to remove item"
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c ItemCtrl) Load() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	fmt.Println(path.Join(revel.BasePath, "/app/models/data/item.xml"))
 	// xml 파일 오픈
@@ -205,17 +205,17 @@ func (c ItemCtrl) Load() revel.Result {
 					msg = msg + " Error inserting record into database!"
 				} else {
 
-					code = 200
+					code = RESULT_CODE_SUCCESS
 					msg = "Success."
-					data["result_data"] = itemData.Item
 				}
 			}
 		}
 
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }

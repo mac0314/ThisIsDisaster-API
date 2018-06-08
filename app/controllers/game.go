@@ -3,13 +3,13 @@ package controllers
 import (
 	"ThisIsDisaster-API/app/models"
 	"encoding/json"
-	"fmt"
 
 	"github.com/revel/revel"
 )
 
 type Game struct {
 	*revel.Controller
+	MatchingCtrl
 }
 
 func (c Game) SinglePlayResult() revel.Result {
@@ -18,7 +18,7 @@ func (c Game) SinglePlayResult() revel.Result {
   {
     "result_code": 200,
     "result_msg": "Success",
-		"response_type": "SingleResult",
+		"result_type": "SinglePlayResult",
     "result_data": {
       "mode": "normal",
       "exp": "3000",
@@ -40,8 +40,8 @@ func (c Game) SinglePlayResult() revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c Game) parseUser() models.UserLocal {
-	var jsonData models.UserLocal
+func (c Game) parseUser() models.User {
+	var jsonData models.User
 
 	c.Params.BindJSON(&jsonData)
 
@@ -49,95 +49,60 @@ func (c Game) parseUser() models.UserLocal {
 }
 
 func (c Game) MultiPlay() revel.Result {
-	testData := c.parseUser()
+	user := c.parseUser()
 
-	fmt.Println(testData)
-	/*
-		// JSON 문서의 데이터를 저장할 공간을 맵으로 선언
-		jsonBytes, err := json.Marshal(testData) // doc를 바이트 슬라이스로 변환하여 넣고,
-		if err != nil {
-			panic(err)
-		}
-		user := string(jsonBytes)
+	c.UpdateIP(user.Email, user.IP)
 
-		fmt.Println(user)
-	*/
-	Matching(testData)
+	GoMatching(user)
 
-	d := map[string]interface{}{
+	response := map[string]interface{}{
 		"result_code": 200,
 		"result_msg":  "Success",
+		"result_type": RESULT_TYPE_RESPONSE,
 	}
 
-	return c.RenderJSON(d)
+	return c.RenderJSON(response)
 }
 
 func (c Game) MultiPlayLobby() revel.Result {
-	// TODO modify demo data
+	email := c.Params.Get("email")
 
-	room := c.Params.Get("room")
+	var userList = []interface{}{}
 
-	data := GetMatchingRoom(room)
+	room, users := c.GetMyMatchingRoom(email)
 
-	var userData = []interface{}{}
+	if len(users) > 0 {
+		host := LoadHost(room)
 
-	if data != nil {
-		userData = data
+		for _, user := range users {
+			var role string
+			if host == user.Email {
+				role = "host"
+			} else {
+				role = "client"
+			}
+
+			userData := map[string]interface{}{
+				"email":    user.Email,
+				"nickname": user.Nickname,
+				"ip":       user.IP,
+				"role":     role,
+			}
+
+			userList = append(userList, userData)
+		}
 	}
 
 	response := map[string]interface{}{
-		"result_code":   200,
-		"result_msg":    "Success",
-		"response_type": "MultiPlayLobby",
+		"result_code": 200,
+		"result_msg":  "Success",
+		"result_type": "MultiPlayLobby",
 		"result_data": map[string]interface{}{
-			"name":      "mac",
-			"level":     "15",
-			"role":      "client",
-			"ip":        "192.168.1.9",
-			"user_list": userData,
+			"email":     email,
+			"user_list": userList,
 		},
 	}
 
-	/*
-			testData := `
-		  {
-		    "result_code": 200,
-		    "result_msg": "Success",
-				"response_type": "MultiLobby",
-		    "result_data": {
-		      "name": "mac",
-		      "level": "15",
-					"role": "client",
-					"ip": "192.168.1.9",
-		      "user_list":[
-		        {
-							"name": "fuck",
-				      "level": "20",
-							"role": "host",
-							"ip": "192.168.1.10"
-						},
-						{
-							"name": "helloworld",
-				      "level": "15",
-							"role": "client",
-							"ip": "192.168.1.11"
-						},
-						{
-							"name": "happyface",
-				      "level": "10",
-							"role": "client",
-							"ip": "192.168.1.12"
-						}
-		      ]
-		    }
-		  }
-		  `
-
-			var response map[string]interface{} // JSON 문서의 데이터를 저장할 공간을 맵으로 선언
-
-			json.Unmarshal([]byte(testData), &response) // doc를 바이트 슬라이스로 변환하여 넣고,
-			// data의 포인터를 넣어줌
-	*/
 	return c.RenderJSON(response)
 }
 
@@ -149,19 +114,23 @@ func (c Game) LeaveMultiPlayLobby() revel.Result {
 	response := map[string]interface{}{
 		"result_code": 200,
 		"result_msg":  "Success",
+		"result_type": RESULT_TYPE_RESPONSE,
 	}
 
 	return c.RenderJSON(response)
 }
 
 func (c Game) StartGame() revel.Result {
-	room := c.Params.Get("room")
+	email := c.Params.Get("email")
+
+	room, _ := c.GetMyMatchingRoom(email)
 
 	ClearMatchingRoom(room)
 
 	response := map[string]interface{}{
 		"result_code": 200,
 		"result_msg":  "Success",
+		"result_type": RESULT_TYPE_RESPONSE,
 	}
 
 	return c.RenderJSON(response)
@@ -173,7 +142,7 @@ func (c Game) MultiPlayResult() revel.Result {
   {
     "result_code": 200,
     "result_msg": "Success",
-		"response_type": "MultiResult",
+		"result_type": "MultiPlayResult",
     "result_data": {
       "mode": "normal",
       "exp": "3000",

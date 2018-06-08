@@ -23,13 +23,7 @@ func defineEventTable(dbm *gorp.DbMap) {
 func (c EventCtrl) parseEvent() models.Event {
 	var jsonData models.Event
 
-	fmt.Println("parseEvent")
-
-	fmt.Println(makeTimestamp())
-
 	c.Params.BindJSON(&jsonData)
-
-	fmt.Println(jsonData)
 
 	return jsonData
 }
@@ -38,11 +32,12 @@ func (c EventCtrl) Add() revel.Result {
 	// JSON response
 	code := 400
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	event := c.parseEvent()
-	fmt.Println(event)
-	// Validate the model
+
+	event.Create = makeTimestamp()
+
 	event.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your event."
@@ -54,21 +49,21 @@ func (c EventCtrl) Add() revel.Result {
 		} else {
 			code = 200
 			msg = "Success."
-			data["result_data"] = event
 		}
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c EventCtrl) Get(id int64) revel.Result {
 	// JSON response
 	code := 400
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	event := new(models.Event)
 	err := c.Txn.SelectOne(event,
@@ -80,20 +75,21 @@ func (c EventCtrl) Get(id int64) revel.Result {
 	} else {
 		code = 200
 		msg = "Success."
-		data["result_data"] = event
+		response["result_data"] = event
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_EVENT
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c EventCtrl) List() revel.Result {
 	// JSON response
 	code := 400
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
@@ -106,20 +102,21 @@ func (c EventCtrl) List() revel.Result {
 	} else {
 		code = 200
 		msg = "Success."
-		data["result_data"] = event
+		response["result_data"] = event
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_EVENTS
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c EventCtrl) Update(id int64) revel.Result {
 	// JSON response
 	code := 400
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	event := c.parseEvent()
 	// Ensure the Id is set.
@@ -132,20 +129,20 @@ func (c EventCtrl) Update(id int64) revel.Result {
 	} else {
 		code = 200
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
-		data["result_data"] = event
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c EventCtrl) Delete(id int64) revel.Result {
 	// JSON response
 	code := 400
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	success, err := c.Txn.Delete(&models.Event{Id: id})
 	if err != nil || success == 0 {
@@ -157,8 +154,9 @@ func (c EventCtrl) Delete(id int64) revel.Result {
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }

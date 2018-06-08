@@ -23,26 +23,19 @@ func defineBodyCostumeTable(dbm *gorp.DbMap) {
 func (c BodyCostumeCtrl) parseBodyCostume() models.BodyCostume {
 	var jsonData models.BodyCostume
 
-	fmt.Println("parseBodyCostume")
-
-	fmt.Println(makeTimestamp())
-
 	c.Params.BindJSON(&jsonData)
-
-	fmt.Println(jsonData)
 
 	return jsonData
 }
 
 func (c BodyCostumeCtrl) Add() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	bodyCostume := c.parseBodyCostume()
-	fmt.Println(bodyCostume)
-	// Validate the model
+
 	bodyCostume.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your body costume."
@@ -52,23 +45,23 @@ func (c BodyCostumeCtrl) Add() revel.Result {
 
 			msg = msg + " Error inserting record into database!"
 		} else {
-			code = 200
+			code = RESULT_CODE_SUCCESS
 			msg = "Success."
-			data["result_data"] = bodyCostume
 		}
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c BodyCostumeCtrl) Get(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	bodyCostume := new(models.BodyCostume)
 	err := c.Txn.SelectOne(bodyCostume,
@@ -78,22 +71,23 @@ func (c BodyCostumeCtrl) Get(id int64) revel.Result {
 
 		msg = msg + " Error body costume probably doesn't exist."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = bodyCostume
+		response["result_data"] = bodyCostume
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_BODY_COSTUME
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c BodyCostumeCtrl) List() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
@@ -104,22 +98,23 @@ func (c BodyCostumeCtrl) List() revel.Result {
 
 		msg = msg + " Error trying to get records from DB."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = bodyCostume
+		response["result_data"] = bodyCostume
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_BODY_COSTUMES
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c BodyCostumeCtrl) Update(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	bodyCostume := c.parseBodyCostume()
 	// Ensure the Id is set.
@@ -130,22 +125,22 @@ func (c BodyCostumeCtrl) Update(id int64) revel.Result {
 
 		msg = msg + " Unable to update body costume."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
-		data["result_data"] = bodyCostume
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c BodyCostumeCtrl) Delete(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	success, err := c.Txn.Delete(&models.BodyCostume{Id: id})
 	if err != nil || success == 0 {
@@ -153,12 +148,13 @@ func (c BodyCostumeCtrl) Delete(id int64) revel.Result {
 
 		msg = msg + " Failed to remove body costume"
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }

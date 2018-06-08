@@ -34,12 +34,6 @@ GET     /api/oauth2/google/callback                 OAuth.Callback
 POST    /api/smtp                                   SMTP.Index
 GET     /api/test                                   TEST.Index
 
-GET     /api/user                                   User.Index
-GET     /api/user/lobby                             User.Lobby
-GET     /api/user/costume                           User.Costume
-GET     /api/user/score                             User.Score
-POST    /api/user/matching                          User.Matching
-
 GET     /api/game/singleplay/result                 Game.SinglePlayResult
 GET     /api/game/multiplay/result                  Game.MultiPlayResult
 GET     /api/game/multiplay/lobby                   Game.MultiPlayLobby
@@ -47,14 +41,11 @@ POST    /api/game/multiplay                         Game.MultiPlay
 POST    /api/game/multiplay/start                         Game.StartGame
 POST    /api/game/multiplay/leave                         Game.LeaveMultiPlayLobby
 
-GET     /api/store                                  Store.Index
-POST    /api/store                                  Store.BuyCostume
 
-
-GET     /api/data/test                                           ItemCtrl.Load
+GET     /api/data/item/load                                           ItemCtrl.Load
 
 GET     /api/achievement/:id                        AchievementCtrl.Get
-POST    /api/achievement                            AchievementCtrl.Add
+POST    /api/achievement                            AchievementCtrl.Post
 PUT     /api/achievement/:id                        AchievementCtrl.Update
 DELETE  /api/achievement/:id                        AchievementCtrl.Delete
 GET     /api/achievements                           AchievementCtrl.List
@@ -83,7 +74,13 @@ PUT     /api/costume/head/:id                       HeadCostumeCtrl.Update
 DELETE  /api/costume/head/:id                       HeadCostumeCtrl.Delete
 GET     /api/costumes/head                          HeadCostumeCtrl.List
 
-GET     /api/error/:id                              ErrorCtrl.Get
+GET     /api/disaster/:id                              DisasterCtrl.Get
+POST    /api/disaster                                  DisasterCtrl.Add
+PUT     /api/disaster/:id                              DisasterCtrl.Update
+DELETE  /api/disaster/:id                              DisasterCtrl.Delete
+GET     /api/disasters                                 DisasterCtrl.List
+
+GET     /api/error                            ErrorCtrl.Get
 POST    /api/error                                  ErrorCtrl.Add
 PUT     /api/error/:id                              ErrorCtrl.Update
 DELETE  /api/error/:id                              ErrorCtrl.Delete
@@ -100,6 +97,18 @@ POST    /api/feedback                               FeedbackCtrl.Add
 PUT     /api/feedback/:id                           FeedbackCtrl.Update
 DELETE  /api/feedback/:id                           FeedbackCtrl.Delete
 GET     /api/feedbacks                              FeedbackCtrl.List
+
+GET     /api/have/costume/body/:id                              HaveBodyCostumeCtrl.Get
+POST    /api/have/costume/body                                  HaveBodyCostumeCtrl.Add
+PUT     /api/have/costume/body/:id                              HaveBodyCostumeCtrl.Update
+DELETE  /api/have/costume/body/:id                              HaveBodyCostumeCtrl.Delete
+GET     /api/have/costumes/body                                 HaveBodyCostumeCtrl.List
+
+GET     /api/have/costume/head/:id                              HaveHeadCostumeCtrl.Get
+POST    /api/have/costume/head                                  HaveHeadCostumeCtrl.Add
+PUT     /api/have/costume/head/:id                              HaveHeadCostumeCtrl.Update
+DELETE  /api/have/costume/head/:id                              HaveHeadCostumeCtrl.Delete
+GET     /api/have/costumes/head                                 HaveHeadCostumeCtrl.List
 
 GET     /api/item/:id                               ItemCtrl.Get
 POST    /api/item                                   ItemCtrl.Add
@@ -125,8 +134,8 @@ PUT     /api/stage/:id                              StageCtrl.Update
 DELETE  /api/stage/:id                              StageCtrl.Delete
 GET     /api/stages                                 StageCtrl.List
 
-GET     /api/user/:id                               UserCtrl.Get
-POST    /api/user                                   UserCtrl.Add
+GET     /api/user                               UserCtrl.Get
+POST    /api/user                                   UserCtrl.Post
 PUT     /api/user/:id                               UserCtrl.Update
 DELETE  /api/user/:id                               UserCtrl.Delete
 GET     /api/users                                  UserCtrl.List

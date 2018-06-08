@@ -9,6 +9,7 @@ type User struct {
 	Email      string `db:"email_mn" json:"email"`
 	Password   string `db:"password_ln" json:"password"`
 	Nickname   string `db:"nickname_mn" json:"nickname"`
+	IP         string `db:"ip_sn" json:"ip"`
 	FacebookId int64  `db:"facebook_id" json:"facebookId"`
 	GoogleId   int64  `db:"google_id" json:"googleId"`
 	GithubId   int64  `db:"github_id" json:"githubId"`
@@ -26,18 +27,17 @@ func (b *User) Validate(v *revel.Validation) {
 		revel.ValidMaxSize(30))
 
 	v.Check(b.Password,
-		revel.ValidRequired(),
 		revel.ValidMaxSize(255))
 
 	v.Check(b.Nickname,
-		revel.ValidRequired(),
 		revel.ValidMaxSize(30))
 
+	v.Check(b.IP,
+		revel.ValidMaxSize(20))
+
 	v.Check(b.Avatar,
-		revel.ValidRequired(),
 		revel.ValidMaxSize(255))
 
 	v.Check(b.Slug,
-		revel.ValidRequired(),
 		revel.ValidMaxSize(128))
 }

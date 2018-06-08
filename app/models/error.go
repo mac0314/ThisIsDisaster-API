@@ -6,6 +6,7 @@ import (
 
 type Error struct {
 	Id      int64  `db:"error_id, primarykey, autoincrement" json:"id"`
+	UserId  int64  `db:"user_id" json:"user_id"`
 	Title   string `db:"title_mn" json:"title"`
 	Content string `db:"log_ln" json:"log"`
 	Create  int64  `db:"create_n" json:"create"`

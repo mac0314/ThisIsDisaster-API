@@ -23,26 +23,21 @@ func defineNoticeTable(dbm *gorp.DbMap) {
 func (c NoticeCtrl) parseNotice() models.Notice {
 	var jsonData models.Notice
 
-	fmt.Println("parseNotice")
-
-	fmt.Println(makeTimestamp())
-
 	c.Params.BindJSON(&jsonData)
-
-	fmt.Println(jsonData)
 
 	return jsonData
 }
 
 func (c NoticeCtrl) Add() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	notice := c.parseNotice()
-	fmt.Println(notice)
-	// Validate the model
+
+	notice.Create = makeTimestamp()
+
 	notice.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your notice."
@@ -52,23 +47,23 @@ func (c NoticeCtrl) Add() revel.Result {
 
 			msg = msg + " Error inserting record into database!"
 		} else {
-			code = 200
+			code = RESULT_CODE_SUCCESS
 			msg = "Success."
-			data["result_data"] = notice
 		}
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c NoticeCtrl) Get(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	notice := new(models.Notice)
 	err := c.Txn.SelectOne(notice,
@@ -78,22 +73,23 @@ func (c NoticeCtrl) Get(id int64) revel.Result {
 
 		msg = msg + " Error notice probably doesn't exist."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = notice
+		response["result_data"] = notice
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_NOTICE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c NoticeCtrl) List() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
@@ -104,22 +100,23 @@ func (c NoticeCtrl) List() revel.Result {
 
 		msg = msg + " Error trying to get records from DB."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = notice
+		response["result_data"] = notice
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_NOTICES
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c NoticeCtrl) Update(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	notice := c.parseNotice()
 	// Ensure the Id is set.
@@ -130,22 +127,22 @@ func (c NoticeCtrl) Update(id int64) revel.Result {
 
 		msg = msg + " Unable to update notice."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
-		data["result_data"] = notice
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c NoticeCtrl) Delete(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	success, err := c.Txn.Delete(&models.Notice{Id: id})
 	if err != nil || success == 0 {
@@ -153,12 +150,13 @@ func (c NoticeCtrl) Delete(id int64) revel.Result {
 
 		msg = msg + " Failed to remove notice"
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }

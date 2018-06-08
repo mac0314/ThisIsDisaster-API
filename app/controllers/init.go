@@ -58,6 +58,9 @@ func defineTable(dbm *gorp.DbMap) {
 	defineStageTable(dbm)
 	defineUserTable(dbm)
 	defineUserSettingTable(dbm)
+	defineHaveHeadCostumeTable(dbm)
+	defineHaveBodyCostumeTable(dbm)
+	defineDisasterTable(dbm)
 }
 
 func initDB() {

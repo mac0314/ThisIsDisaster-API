@@ -23,26 +23,21 @@ func defineAuthorizeTable(dbm *gorp.DbMap) {
 func (c AuthorizeCtrl) parseAuthorize() models.Authorize {
 	var jsonData models.Authorize
 
-	fmt.Println("parseAuthorize")
-
-	fmt.Println(makeTimestamp())
-
 	c.Params.BindJSON(&jsonData)
-
-	fmt.Println(jsonData)
 
 	return jsonData
 }
 
 func (c AuthorizeCtrl) Add() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	authorize := c.parseAuthorize()
-	fmt.Println(authorize)
-	// Validate the model
+
+	authorize.Create = makeTimestamp()
+
 	authorize.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your authorize."
@@ -52,23 +47,23 @@ func (c AuthorizeCtrl) Add() revel.Result {
 
 			msg = msg + " Error inserting record into database!"
 		} else {
-			code = 200
+			code = RESULT_CODE_SUCCESS
 			msg = "Success."
-			data["result_data"] = authorize
 		}
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c AuthorizeCtrl) Get(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	authorize := new(models.Authorize)
 	err := c.Txn.SelectOne(authorize,
@@ -78,22 +73,23 @@ func (c AuthorizeCtrl) Get(id int64) revel.Result {
 
 		msg = msg + " Error authorize probably doesn't exist."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = authorize
+		response["result_data"] = authorize
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_AUTHORIZE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c AuthorizeCtrl) List() revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
@@ -104,22 +100,23 @@ func (c AuthorizeCtrl) List() revel.Result {
 
 		msg = msg + " Error trying to get records from DB."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		data["result_data"] = authorize
+		response["result_data"] = authorize
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_AUTHORIZES
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c AuthorizeCtrl) Update(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	authorize := c.parseAuthorize()
 	// Ensure the Id is set.
@@ -130,22 +127,22 @@ func (c AuthorizeCtrl) Update(id int64) revel.Result {
 
 		msg = msg + " Unable to update authorize."
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
-		data["result_data"] = authorize
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }
 
 func (c AuthorizeCtrl) Delete(id int64) revel.Result {
 	// JSON response
-	code := 400
+	code := RESULT_CODE_FAILURE
 	msg := "Fail."
-	data := make(map[string]interface{})
+	response := make(map[string]interface{})
 
 	success, err := c.Txn.Delete(&models.Authorize{Id: id})
 	if err != nil || success == 0 {
@@ -153,12 +150,13 @@ func (c AuthorizeCtrl) Delete(id int64) revel.Result {
 
 		msg = msg + " Failed to remove authorize"
 	} else {
-		code = 200
+		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
 	}
 
-	data["result_code"] = code
-	data["result_msg"] = msg
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
 
-	return c.RenderJSON(data)
+	return c.RenderJSON(response)
 }

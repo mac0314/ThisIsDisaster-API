@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"ThisIsDisaster-API/app/models"
-	"encoding/json"
-	"fmt"
 
 	"github.com/go-redis/redis"
 )
+
+type MatchingCtrl struct {
+	GorpController
+}
 
 func makeClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
@@ -18,7 +20,43 @@ func makeClient() *redis.Client {
 	return client
 }
 
-func CreateMatchingRoom() string {
+func (c MatchingCtrl) SelectMatchingUsers(emails []string) []models.User {
+	//	var msg string
+	query := "SELECT * FROM user"
+
+	for i, email := range emails {
+		if i == 0 {
+			query += " WHERE email_mn = '" + email + "'"
+		} else {
+			query += " OR email_mn = '" + email + "'"
+		}
+	}
+
+	var list []models.User
+	_, _err := c.Txn.Select(&list, query)
+	if _err != nil {
+		panic(_err)
+	}
+
+	return list
+}
+
+func (c MatchingCtrl) UpdateIP(email string, ip string) (bool, string) {
+	var err bool
+	var msg string
+
+	_, _err := c.Txn.Exec("UPDATE user SET ip_sn = ? WHERE email_mn = ?", ip, email)
+
+	if _err != nil {
+		err = true
+	} else {
+		err = false
+	}
+
+	return err, msg
+}
+
+func CreateMatchingRoom(user models.User) string {
 	client := makeClient()
 
 	room := RandStringBytesMaskImprSrc(6)
@@ -29,6 +67,11 @@ func CreateMatchingRoom() string {
 	}
 
 	err = client.SAdd("room/list/available", room).Err()
+	if err != nil {
+		panic(err)
+	}
+
+	err = client.Set("room/"+room+"/host", user.Email, 0).Err()
 	if err != nil {
 		panic(err)
 	}
@@ -76,7 +119,7 @@ func GetAvailableRoom() string {
 	return room
 }
 
-func Matching(user models.UserLocal) {
+func GoMatching(user models.User) {
 	var room string
 
 	flag := CheckAvailableRoom()
@@ -85,12 +128,12 @@ func Matching(user models.UserLocal) {
 		room = GetAvailableRoom()
 
 	} else {
-		room = CreateMatchingRoom()
+		room = CreateMatchingRoom(user)
 	}
 	JoinMatchingRoom(room, user)
 }
 
-func JoinMatchingRoom(room string, user models.UserLocal) {
+func JoinMatchingRoom(room string, user models.User) {
 	client := makeClient()
 
 	err := client.Set("user/"+user.Email+"/room", room, 0).Err()
@@ -113,7 +156,7 @@ func JoinMatchingRoom(room string, user models.UserLocal) {
 	}
 }
 
-func GetMatchingRoom(room string) []interface{} {
+func (c MatchingCtrl) GetMatchingRoom(room string) []models.User {
 	client := makeClient()
 
 	val, err := client.SMembers("room/" + room).Result()
@@ -121,29 +164,34 @@ func GetMatchingRoom(room string) []interface{} {
 		panic(err)
 	}
 
-	var userData []interface{}
-	for _, userString := range val {
-		fmt.Println(userString)
-		var user models.UserLocal
-		json.Unmarshal([]byte(userString), &user)
+	users := c.SelectMatchingUsers(val)
 
-		userData = append(userData, user)
-	}
-
-	return userData
+	return users
 }
 
-func GetMyMatchingRoom(user models.UserLocal) []interface{} {
+func (c MatchingCtrl) GetMyMatchingRoom(email string) (string, []models.User) {
 	client := makeClient()
 
-	room, err := client.Get("user/" + user.Email + "/room").Result()
+	room, err := client.Get("user/" + email + "/room").Result()
 	if err != nil {
 		panic(err)
 	}
 
-	userData := GetMatchingRoom(room)
+	users := c.GetMatchingRoom(room)
 
-	return userData
+	return room, users
+}
+
+func LoadHost(room string) string {
+	client := makeClient()
+
+	host, err := client.Get("room/" + room + "/host").Result()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return host
 }
 
 func LeaveMatchingRoom(email string) {
@@ -152,6 +200,27 @@ func LeaveMatchingRoom(email string) {
 	room, err := client.Get("user/" + email + "/room").Result()
 	if err != nil {
 		panic(err)
+	}
+
+	host := LoadHost(room)
+
+	if host == email {
+		users, err := client.SMembers("room/" + room).Result()
+		if err != nil {
+			panic(err)
+		}
+
+		for _, value := range users {
+			if value != email {
+				err = client.Set("room/"+room+"/host", value, 0).Err()
+				if err != nil {
+					panic(err)
+				}
+
+				break
+			}
+		}
+
 	}
 
 	client.Del("user/" + email + "/room")
@@ -174,7 +243,6 @@ func ClearMatchingRoom(room string) {
 
 	client.SRem("room/list", room)
 	client.SRem("room/list/available", room)
+	client.Del("room/" + room + "/host")
 	client.Del("room/" + room)
-
-	fmt.Println("ClearMatchingRoom")
 }
