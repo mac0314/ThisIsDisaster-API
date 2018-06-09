@@ -8,38 +8,40 @@ import (
 	"github.com/revel/revel"
 )
 
-type UserSettingCtrl struct {
+type MapCtrl struct {
 	GorpController
 }
 
-func defineUserSettingTable(dbm *gorp.DbMap) {
+func defineMapTable(dbm *gorp.DbMap) {
 	// set "id" as primary key and autoincrement
-	dbm.AddTableWithName(models.UserSetting{}, "user_setting").SetKeys(true, "user_id")
+	t := dbm.AddTableWithName(models.Map{}, "map").SetKeys(true, "map_id")
+
+	t.ColMap("formation_ln").SetMaxSize(255)
 }
 
-func (c UserSettingCtrl) parseUserSetting() models.UserSetting {
-	var jsonData models.UserSetting
+func (c MapCtrl) parseMap() models.Map {
+	var jsonData models.Map
 
 	c.Params.BindJSON(&jsonData)
 
 	return jsonData
 }
 
-func (c UserSettingCtrl) Add() revel.Result {
+func (c MapCtrl) Add() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := c.parseUserSetting()
+	_map := c.parseMap()
 
-	userSetting.Update = makeTimestamp()
+	_map.Create = makeTimestamp()
 
-	userSetting.Validate(c.Validation)
+	_map.Validate(c.Validation)
 	if c.Validation.HasErrors() {
-		msg = msg + " You have error in your user setting."
+		msg = msg + " You have error in your map."
 	} else {
-		if err := c.Txn.Insert(&userSetting); err != nil {
+		if err := c.Txn.Insert(&_map); err != nil {
 			fmt.Println(err)
 
 			msg = msg + " Error inserting record into database!"
@@ -56,34 +58,33 @@ func (c UserSettingCtrl) Add() revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Get() revel.Result {
-	id := parseIntOrDefault(c.Params.Get("uid"), 0)
+func (c MapCtrl) Get(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := new(models.UserSetting)
-	err := c.Txn.SelectOne(userSetting,
-		`SELECT * FROM user_setting WHERE user_id = ?`, id)
+	_map := new(models.Map)
+	err := c.Txn.SelectOne(_map,
+		`SELECT * FROM map WHERE map_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
 
-		msg = msg + " Error user setting probably doesn't exist."
+		msg = msg + "Error. _map probably doesn't exist."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = userSetting
+		response["result_data"] = _map
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_USER_SETTING
+	response["result_type"] = RESULT_TYPE_MAP
 
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) List() revel.Result {
+func (c MapCtrl) List() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
@@ -91,40 +92,35 @@ func (c UserSettingCtrl) List() revel.Result {
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
-	userSetting, err := c.Txn.Select(models.UserSetting{},
-		`SELECT * FROM user_setting WHERE user_id > ? LIMIT ?`, lastId, limit)
+	_map, err := c.Txn.Select(models.Map{},
+		`SELECT * FROM map WHERE map_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
-		fmt.Println(err)
-
-		msg = msg + " Error trying to get records from DB."
+		msg = msg + "Error trying to get records from DB."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = userSetting
+		response["result_data"] = _map
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_USER_SETTINGS
+	response["result_type"] = RESULT_TYPE_MAPS
 
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Update() revel.Result {
-	id := parseIntOrDefault(c.Params.Get("uid"), 0)
+func (c MapCtrl) Update(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	userSetting := c.parseUserSetting()
+	_map := c.parseMap()
 	// Ensure the Id is set.
-	userSetting.Id = id
-	success, err := c.Txn.Update(&userSetting)
+	_map.Id = id
+	success, err := c.Txn.Update(&_map)
 	if err != nil || success == 0 {
-		fmt.Println(err)
-
-		msg = msg + " Unable to update user setting."
+		msg = msg + " Unable to update map."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
@@ -137,18 +133,15 @@ func (c UserSettingCtrl) Update() revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c UserSettingCtrl) Delete() revel.Result {
-	id := parseIntOrDefault(c.Params.Get("uid"), 0)
+func (c MapCtrl) Delete(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	success, err := c.Txn.Delete(&models.User{Id: id})
+	success, err := c.Txn.Delete(&models.Map{Id: id})
 	if err != nil || success == 0 {
-		fmt.Println(err)
-
-		msg = msg + " Failed to remove user setting"
+		msg = msg + " Failed to remove map"
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)

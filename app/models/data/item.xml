@@ -1,19 +1,173 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Items>
-  <Item id="1" type="head"    name="_dummy_head" sprite="Item/head" max="1" tag="dummy">
+  <Item id="1" type="weapon" name="장검" sprite="Item/sample/weapon01" description="아이템 설명">
     <id>1</id>
-    <name>_dummy_head</name>
-    <type>normal</type>
-    <rank>normal</rank>
-    <effect>+10</effect>
-    <resource>Item/head</resource>
+    <type>weapon</type>
+    <name>장검</name>
+    <sprite>Item/sample/weapon01</sprite>
+    <description>아이템 설명</description>
+    <damage>20</damage>
+    <range_x>10</range_x>
+    <range_y>20</range_y>
   </Item>
-  <Item id="2" type="body"    name="_dummy_body" sprite="Item/body" max="1" tag="dummy">
+  <Item id="2" type="weapon" name="도끼" sprite="Item/sample/weapon02" description="아이템 설명">
     <id>2</id>
-    <name>_dummy_body</name>
-    <type>normal</type>
-    <rank>normal</rank>
-    <effect>+10</effect>
-    <resource>Item/body</resource>
+    <type>weapon</type>
+    <name>도끼</name>
+    <sprite>Item/sample/weapon02</sprite>
+    <description>아이템 설명</description>
+    <damage>23</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="3" type="weapon" name="작은 망치" sprite="Item/sample/weapon03" description="아이템 설명">
+    <id>3</id>
+    <type>weapon</type>
+    <name>작은 망치</name>
+    <sprite>Item/sample/weapon03</sprite>
+    <description>아이템 설명</description>
+    <damage>23</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="4" type="weapon" name="지팡이" sprite="Item/sample/weapon04" description="아이템 설명">
+    <id>4</id>
+    <type>weapon</type>
+    <name>지팡이</name>
+    <sprite>Item/sample/weapon04</sprite>
+    <description>아이템 설명</description>
+    <damage>10</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="5" type="weapon" name="목검" sprite="Item/sample/weapon05" description="아이템 설명">
+    <id>5</id>
+    <type>weapon</type>
+    <name>목검</name>
+    <sprite>Item/sample/weapon05</sprite>
+    <description>아이템 설명</description>
+    <damage>10</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="6" type="weapon" name="단검" sprite="Item/sample/weapon06" description="아이템 설명">
+    <id>6</id>
+    <type>weapon</type>
+    <name>단검</name>
+    <sprite>Item/sample/weapon06</sprite>
+    <description>아이템 설명</description>
+    <damage>12</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="7" type="weapon" name="큰 망치" sprite="Item/sample/weapon07" description="아이템 설명">
+    <id>7</id>
+    <type>weapon</type>
+    <name>큰 망치</name>
+    <sprite>Item/sample/weapon07</sprite>
+    <description>아이템 설명</description>
+    <damage>50</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="8" type="weapon" name="대부" sprite="Item/sample/weapon08" description="아이템 설명">
+    <id>8</id>
+    <type>weapon</type>
+    <name>대부</name>
+    <sprite>Item/sample/weapon08</sprite>
+    <description>아이템 설명</description>
+    <damage>50</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="9" type="weapon" name="도검" sprite="Item/sample/weapon09" description="아이템 설명">
+    <id>9</id>
+    <type>weapon</type>
+    <name>도검</name>
+    <sprite>Item/sample/weapon09</sprite>
+    <description>아이템 설명</description>
+    <damage>50</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="10" type="weapon" name="보검" sprite="Item/sample/weapon10" description="아이템 설명">
+    <id>10</id>
+    <type>weapon</type>
+    <name>보검</name>
+    <sprite>Item/sample/weapon10</sprite>
+    <description>아이템 설명</description>
+    <damage>40</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="11" type="weapon" name="창" sprite="Item/sample/weapon11" description="아이템 설명">
+    <id>11</id>
+    <type>weapon</type>
+    <name>창</name>
+    <sprite>Item/sample/weapon11</sprite>
+    <description>아이템 설명</description>
+    <damage>60</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="12" type="weapon" name="미늘창" sprite="Item/sample/weapon12" description="아이템 설명">
+    <id>12</id>
+    <type>weapon</type>
+    <name>미늘창</name>
+    <sprite>Item/sample/weapon12</sprite>
+    <description>아이템 설명</description>
+    <damage>55</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="13" type="weapon" name="소화기" sprite="Item/sample/weapon13" description="아이템 설명">
+    <id>13</id>
+    <type>weapon</type>
+    <name>소화기</name>
+    <sprite>Item/sample/weapon13</sprite>
+    <description>아이템 설명</description>
+    <damage>10</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="14" type="weapon" name="식칼" sprite="Item/sample/weapon14" description="아이템 설명">
+    <id>14</id>
+    <type>weapon</type>
+    <name>식칼</name>
+    <sprite>Item/sample/weapon14</sprite>
+    <description>아이템 설명</description>
+    <damage>10</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="15" type="weapon" name="톱" sprite="Item/sample/weapon15" description="아이템 설명">
+    <id>15</id>
+    <type>weapon</type>
+    <name>톱</name>
+    <sprite>Item/sample/weapon15</sprite>
+    <description>아이템 설명</description>
+    <damage>10</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="16" type="weapon" name="전기충격기" sprite="Item/sample/weapon16" description="아이템 설명">
+    <id>16</id>
+    <type>weapon</type>
+    <name>전기충격기</name>
+    <sprite>Item/sample/weapon16</sprite>
+    <description>아이템 설명</description>
+    <damage>100</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
+  </Item>
+  <Item id="17" type="weapon" name="우산" sprite="Item/sample/weapon17" description="아이템 설명">
+    <id>17</id>
+    <type>weapon</type>
+    <name>우산</name>
+    <sprite>Item/sample/weapon17</sprite>
+    <description>아이템 설명</description>
+    <damage>100</damage>
+    <range_x>5</range_x>
+    <range_y>5</range_y>
   </Item>
 </Items>

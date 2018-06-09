@@ -15,7 +15,8 @@ type StageCtrl struct {
 func defineStageTable(dbm *gorp.DbMap) {
 	// set "id" as primary key and autoincrement
 	t := dbm.AddTableWithName(models.Stage{}, "stage").SetKeys(true, "stage_id")
-	// e.g. VARCHAR(25)
+
+	t.ColMap("name_sn").SetMaxSize(30)
 	t.ColMap("mode_sn").SetMaxSize(20)
 }
 

@@ -3,13 +3,14 @@ package controllers
 import (
 	"ThisIsDisaster-API/app/models"
 	"encoding/json"
+	"fmt"
 
 	"github.com/revel/revel"
 )
 
 type Game struct {
 	*revel.Controller
-	MatchingCtrl
+	Matching
 }
 
 func (c Game) SinglePlayResult() revel.Result {
@@ -48,7 +49,7 @@ func (c Game) parseUser() models.User {
 	return jsonData
 }
 
-func (c Game) MultiPlay() revel.Result {
+func (c Game) MultiPlayJoin() revel.Result {
 	user := c.parseUser()
 
 	c.UpdateIP(user.Email, user.IP)
@@ -71,6 +72,8 @@ func (c Game) MultiPlayLobby() revel.Result {
 
 	room, users := c.GetMyMatchingRoom(email)
 
+	fmt.Println(room)
+
 	if len(users) > 0 {
 		host := LoadHost(room)
 
@@ -85,6 +88,7 @@ func (c Game) MultiPlayLobby() revel.Result {
 			userData := map[string]interface{}{
 				"email":    user.Email,
 				"nickname": user.Nickname,
+				"level":    user.Level,
 				"ip":       user.IP,
 				"role":     role,
 			}
@@ -99,6 +103,7 @@ func (c Game) MultiPlayLobby() revel.Result {
 		"result_type": "MultiPlayLobby",
 		"result_data": map[string]interface{}{
 			"email":     email,
+			"stage":     room,
 			"user_list": userList,
 		},
 	}
@@ -122,10 +127,17 @@ func (c Game) LeaveMultiPlayLobby() revel.Result {
 
 func (c Game) StartGame() revel.Result {
 	email := c.Params.Get("email")
+	mode := c.Params.Get("mode")
 
 	room, _ := c.GetMyMatchingRoom(email)
 
 	ClearMatchingRoom(room)
+
+	createTime := makeTimestamp()
+
+	_stage := &models.Stage{0, room, mode, createTime}
+
+	c.Txn.Insert(_stage)
 
 	response := map[string]interface{}{
 		"result_code": 200,

@@ -8,60 +8,49 @@ import (
 	"github.com/revel/revel"
 )
 
-type AchievementCtrl struct {
+type MediaCtrl struct {
 	GorpController
 }
 
-func defineAchievementTable(dbm *gorp.DbMap) {
+func defineMediaTable(dbm *gorp.DbMap) {
 	// set "id" as primary key and autoincrement
-	t := dbm.AddTableWithName(models.Achievement{}, "achievement").SetKeys(true, "achievement_id")
-	// e.g. VARCHAR(25)
+	t := dbm.AddTableWithName(models.Media{}, "media").SetKeys(true, "media_id")
 	t.ColMap("title_mn").SetMaxSize(50)
 	t.ColMap("content_ln").SetMaxSize(255)
+	t.ColMap("thumbnail_ln").SetMaxSize(255)
+	t.ColMap("image_ln").SetMaxSize(255)
 }
 
-func (c AchievementCtrl) parseAchievement() models.Achievement {
-	var jsonData models.Achievement
+func (c MediaCtrl) parseMedia() models.Media {
+	var jsonData models.Media
 
 	c.Params.BindJSON(&jsonData)
 
 	return jsonData
 }
 
-func (c AchievementCtrl) Add(data models.Achievement) (bool, string) {
-	var err bool
-	var msg string
-
-	data.Validate(c.Validation)
-	if c.Validation.HasErrors() {
-		msg = msg + " You have error in your achievement."
-	} else {
-		if _err := c.Txn.Insert(&data); _err != nil {
-			fmt.Println(_err)
-
-			msg = msg + " Error inserting record into database!"
-		} else {
-			msg = "Success."
-		}
-	}
-
-	return err, msg
-}
-
-func (c AchievementCtrl) Post() revel.Result {
+func (c MediaCtrl) Add() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	achievement := c.parseAchievement()
+	media := c.parseMedia()
 
-	err, msg := c.Add(achievement)
+	media.Create = makeTimestamp()
 
-	fmt.Println(err)
+	media.Validate(c.Validation)
+	if c.Validation.HasErrors() {
+		msg = msg + " You have error in your media."
+	} else {
+		if err := c.Txn.Insert(&media); err != nil {
+			fmt.Println(err)
 
-	if !err {
-		code = RESULT_CODE_SUCCESS
+			msg = msg + " Error inserting record into database!"
+		} else {
+			code = RESULT_CODE_SUCCESS
+			msg = "Success."
+		}
 	}
 
 	response["result_code"] = code
@@ -69,36 +58,35 @@ func (c AchievementCtrl) Post() revel.Result {
 	response["result_type"] = RESULT_TYPE_RESPONSE
 
 	return c.RenderJSON(response)
-
 }
 
-func (c AchievementCtrl) Get(id int64) revel.Result {
+func (c MediaCtrl) Get(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	achievement := new(models.Achievement)
-	err := c.Txn.SelectOne(achievement,
-		`SELECT * FROM achievement WHERE achievement_id = ?`, id)
+	media := new(models.Media)
+	err := c.Txn.SelectOne(media,
+		`SELECT * FROM media WHERE media_id = ?`, id)
 	if err != nil {
 		fmt.Println(err)
 
-		msg = msg + " Error achievement probably doesn't exist."
+		msg = msg + " Error media probably doesn't exist."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = achievement
+		response["result_data"] = media
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_ACHIEVEMENT
+	response["result_type"] = RESULT_TYPE_MEDIUM
 
 	return c.RenderJSON(response)
 }
 
-func (c AchievementCtrl) List() revel.Result {
+func (c MediaCtrl) List() revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
@@ -106,8 +94,8 @@ func (c AchievementCtrl) List() revel.Result {
 
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
-	achievement, err := c.Txn.Select(models.Achievement{},
-		`SELECT * FROM achievement WHERE achievement_id > ? LIMIT ?`, lastId, limit)
+	media, err := c.Txn.Select(models.Media{},
+		`SELECT * FROM media WHERE media_id > ? LIMIT ?`, lastId, limit)
 	if err != nil {
 		fmt.Println(err)
 
@@ -115,34 +103,33 @@ func (c AchievementCtrl) List() revel.Result {
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success."
-		response["result_data"] = achievement
+		response["result_data"] = media
 	}
 
 	response["result_code"] = code
 	response["result_msg"] = msg
-	response["result_type"] = RESULT_TYPE_ACHIEVEMENTS
+	response["result_type"] = RESULT_TYPE_MEDIA
 
 	return c.RenderJSON(response)
 }
 
-func (c AchievementCtrl) Update(id int64) revel.Result {
+func (c MediaCtrl) Update(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	achievement := c.parseAchievement()
+	media := c.parseMedia()
 	// Ensure the Id is set.
-	achievement.Id = id
-	success, err := c.Txn.Update(&achievement)
+	media.Id = id
+	success, err := c.Txn.Update(&media)
 	if err != nil || success == 0 {
 		fmt.Println(err)
 
-		msg = msg + " Unable to update achievement."
+		msg = msg + " Unable to update media."
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Updated %d", id)
-		response["result_data"] = achievement
 	}
 
 	response["result_code"] = code
@@ -152,17 +139,17 @@ func (c AchievementCtrl) Update(id int64) revel.Result {
 	return c.RenderJSON(response)
 }
 
-func (c AchievementCtrl) Delete(id int64) revel.Result {
+func (c MediaCtrl) Delete(id int64) revel.Result {
 	// JSON response
 	code := RESULT_CODE_FAILURE
 	msg := "Fail."
 	response := make(map[string]interface{})
 
-	success, err := c.Txn.Delete(&models.Achievement{Id: id})
+	success, err := c.Txn.Delete(&models.Media{Id: id})
 	if err != nil || success == 0 {
 		fmt.Println(err)
 
-		msg = msg + " Failed to remove achievement"
+		msg = msg + " Failed to remove media"
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)

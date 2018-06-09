@@ -5,10 +5,10 @@ import (
 )
 
 type Disaster struct {
-	Id     int64  `db:"disaster_id, primarykey, autoincrement" json:"id"`
-	Name   string `db:"name_mn" json:"name"`
-	Info   string `db:"info_ln" json:"info"`
-	Update int64  `db:"update_n" json:"update"`
+	Id     int64  `db:"disaster_id, primarykey, autoincrement" json:"id" xml:"id"`
+	Name   string `db:"name_mn" json:"name" xml:"name"`
+	Info   string `db:"info_ln" json:"info" xml:"info"`
+	Create int64  `db:"create_n" json:"create" xml:"create"`
 }
 
 func (b *Disaster) Validate(v *revel.Validation) {

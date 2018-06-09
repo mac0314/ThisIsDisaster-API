@@ -16,16 +16,15 @@ GET     /community                                  App.Community
 GET     /multiplay                                  App.MultiPlay
 
 GET     /admin                                      Admin.Index
-GET     /admin/members                                      Admin.Members
-GET     /admin/score                                      Admin.Score
-GET     /admin/games                                      Admin.Games
-GET     /admin/feedbacks                                      Admin.Feedbacks
+GET     /admin/members                              Admin.Members
+GET     /admin/score                                Admin.Score
+GET     /admin/games                                Admin.Games
+GET     /admin/feedbacks                            Admin.Feedbacks
 
 GET     /firebase                                   Firebase.Index
 
 
 # API routes
-
 GET     /api/oauth2/google                          OAuth.GoogleAuth
 GET     /api/oauth2/facebook                        OAuth.FacebookAuth
 GET     /api/oauth2/github                          OAuth.GithubAuth
@@ -37,12 +36,13 @@ GET     /api/test                                   TEST.Index
 GET     /api/game/singleplay/result                 Game.SinglePlayResult
 GET     /api/game/multiplay/result                  Game.MultiPlayResult
 GET     /api/game/multiplay/lobby                   Game.MultiPlayLobby
-POST    /api/game/multiplay                         Game.MultiPlay
-POST    /api/game/multiplay/start                         Game.StartGame
-POST    /api/game/multiplay/leave                         Game.LeaveMultiPlayLobby
+POST    /api/game/multiplay/join                    Game.MultiPlayJoin
+POST    /api/game/multiplay/leave                   Game.LeaveMultiPlayLobby
+POST    /api/game/start                             Game.StartGame
 
-
-GET     /api/data/item/load                                           ItemCtrl.Load
+POST     /api/data/disaster/load                    DisasterCtrl.Load
+POST     /api/data/item/load                        ItemCtrl.Load
+POST     /api/data/monster/load                     MonsterCtrl.Load
 
 GET     /api/achievement/:id                        AchievementCtrl.Get
 POST    /api/achievement                            AchievementCtrl.Post
@@ -50,11 +50,29 @@ PUT     /api/achievement/:id                        AchievementCtrl.Update
 DELETE  /api/achievement/:id                        AchievementCtrl.Delete
 GET     /api/achievements                           AchievementCtrl.List
 
+GET     /api/appear/:id                             AppearCtrl.Get
+POST    /api/appear                                 AppearCtrl.Add
+PUT     /api/appear/:id                             AppearCtrl.Update
+DELETE  /api/appear/:id                             AppearCtrl.Delete
+GET     /api/appears                                AppearCtrl.List
+
+GET     /api/apply/:id                              ApplyCtrl.Get
+POST    /api/apply                                  ApplyCtrl.Add
+PUT     /api/apply/:id                              ApplyCtrl.Update
+DELETE  /api/apply/:id                              ApplyCtrl.Delete
+GET     /api/applys                                 ApplyCtrl.List
+
 GET     /api/authorize/:id                          AuthorizeCtrl.Get
 POST    /api/authorize                              AuthorizeCtrl.Add
 PUT     /api/authorize/:id                          AuthorizeCtrl.Update
 DELETE  /api/authorize/:id                          AuthorizeCtrl.Delete
 GET     /api/authorizes                             AuthorizeCtrl.List
+
+GET     /api/award/:id                              AwardCtrl.Get
+POST    /api/award                                  AwardCtrl.Post
+PUT     /api/award/:id                              AwardCtrl.Update
+DELETE  /api/award/:id                              AwardCtrl.Delete
+GET     /api/awards                                 AwardCtrl.List
 
 GET     /api/character/:id                          CharacterCtrl.Get
 POST    /api/character                              CharacterCtrl.Add
@@ -74,13 +92,13 @@ PUT     /api/costume/head/:id                       HeadCostumeCtrl.Update
 DELETE  /api/costume/head/:id                       HeadCostumeCtrl.Delete
 GET     /api/costumes/head                          HeadCostumeCtrl.List
 
-GET     /api/disaster/:id                              DisasterCtrl.Get
-POST    /api/disaster                                  DisasterCtrl.Add
-PUT     /api/disaster/:id                              DisasterCtrl.Update
-DELETE  /api/disaster/:id                              DisasterCtrl.Delete
-GET     /api/disasters                                 DisasterCtrl.List
+GET     /api/disaster/:id                           DisasterCtrl.Get
+POST    /api/disaster                               DisasterCtrl.Add
+PUT     /api/disaster/:id                           DisasterCtrl.Update
+DELETE  /api/disaster/:id                           DisasterCtrl.Delete
+GET     /api/disasters                              DisasterCtrl.List
 
-GET     /api/error                            ErrorCtrl.Get
+GET     /api/error                                  ErrorCtrl.Get
 POST    /api/error                                  ErrorCtrl.Add
 PUT     /api/error/:id                              ErrorCtrl.Update
 DELETE  /api/error/:id                              ErrorCtrl.Delete
@@ -98,23 +116,53 @@ PUT     /api/feedback/:id                           FeedbackCtrl.Update
 DELETE  /api/feedback/:id                           FeedbackCtrl.Delete
 GET     /api/feedbacks                              FeedbackCtrl.List
 
-GET     /api/have/costume/body/:id                              HaveBodyCostumeCtrl.Get
-POST    /api/have/costume/body                                  HaveBodyCostumeCtrl.Add
-PUT     /api/have/costume/body/:id                              HaveBodyCostumeCtrl.Update
-DELETE  /api/have/costume/body/:id                              HaveBodyCostumeCtrl.Delete
-GET     /api/have/costumes/body                                 HaveBodyCostumeCtrl.List
+GET     /api/game/log/:id                           GameLogCtrl.Get
+POST    /api/game/log                               GameLogCtrl.Add
+PUT     /api/game/log/:id                           GameLogCtrl.Update
+DELETE  /api/game/log/:id                           GameLogCtrl.Delete
+GET     /api/game/logs                              GameLogCtrl.List
 
-GET     /api/have/costume/head/:id                              HaveHeadCostumeCtrl.Get
-POST    /api/have/costume/head                                  HaveHeadCostumeCtrl.Add
-PUT     /api/have/costume/head/:id                              HaveHeadCostumeCtrl.Update
-DELETE  /api/have/costume/head/:id                              HaveHeadCostumeCtrl.Delete
-GET     /api/have/costumes/head                                 HaveHeadCostumeCtrl.List
+GET     /api/have/costume/body/:id                  HaveBodyCostumeCtrl.Get
+POST    /api/have/costume/body                      HaveBodyCostumeCtrl.Add
+PUT     /api/have/costume/body/:id                  HaveBodyCostumeCtrl.Update
+DELETE  /api/have/costume/body/:id                  HaveBodyCostumeCtrl.Delete
+GET     /api/have/costumes/body                     HaveBodyCostumeCtrl.List
 
-GET     /api/item/:id                               ItemCtrl.Get
-POST    /api/item                                   ItemCtrl.Add
-PUT     /api/item/:id                               ItemCtrl.Update
-DELETE  /api/item/:id                               ItemCtrl.Delete
-GET     /api/items                                  ItemCtrl.List
+GET     /api/have/costume/head/:id                  HaveHeadCostumeCtrl.Get
+POST    /api/have/costume/head                      HaveHeadCostumeCtrl.Add
+PUT     /api/have/costume/head/:id                  HaveHeadCostumeCtrl.Update
+DELETE  /api/have/costume/head/:id                  HaveHeadCostumeCtrl.Delete
+GET     /api/have/costumes/head                     HaveHeadCostumeCtrl.List
+
+GET     /api/handle/:id                             HandleCtrl.Get
+POST    /api/handle                                 HandleCtrl.Add
+PUT     /api/handle/:id                             HandleCtrl.Update
+DELETE  /api/handle/:id                             HandleCtrl.Delete
+GET     /api/handles                                HandleCtrl.List
+
+GET     /api/happen/:id                             HappenCtrl.Get
+POST    /api/happen                                 HappenCtrl.Add
+PUT     /api/happen/:id                             HappenCtrl.Update
+DELETE  /api/happen/:id                             HappenCtrl.Delete
+GET     /api/happens                                HappenCtrl.List
+
+GET     /api/have/:id                               HaveCtrl.Get
+POST    /api/have                                   HaveCtrl.Add
+PUT     /api/have/:id                               HaveCtrl.Update
+DELETE  /api/have/:id                               HaveCtrl.Delete
+GET     /api/have                                   HaveCtrl.List
+
+GET     /api/map/:id                                MapCtrl.Get
+POST    /api/map                                    MapCtrl.Add
+PUT     /api/map/:id                                MapCtrl.Update
+DELETE  /api/map/:id                                MapCtrl.Delete
+GET     /api/maps                                   MapCtrl.List
+
+GET     /api/medium/:id                             MediaCtrl.Get
+POST    /api/medium                                 MediaCtrl.Add
+PUT     /api/medium/:id                             MediaCtrl.Update
+DELETE  /api/medium/:id                             MediaCtrl.Delete
+GET     /api/media                                  MediaCtrl.List
 
 GET     /api/monster/:id                            MonsterCtrl.Get
 POST    /api/monster                                MonsterCtrl.Add
@@ -134,16 +182,16 @@ PUT     /api/stage/:id                              StageCtrl.Update
 DELETE  /api/stage/:id                              StageCtrl.Delete
 GET     /api/stages                                 StageCtrl.List
 
-GET     /api/user                               UserCtrl.Get
+GET     /api/user                                   UserCtrl.Get
 POST    /api/user                                   UserCtrl.Post
 PUT     /api/user/:id                               UserCtrl.Update
 DELETE  /api/user/:id                               UserCtrl.Delete
 GET     /api/users                                  UserCtrl.List
 
-GET     /api/user/:id/setting                       UserSettingCtrl.Get
+GET     /api/user/setting                           UserSettingCtrl.Get
 POST    /api/user/setting                           UserSettingCtrl.Add
-PUT     /api/user/:id/setting                       UserSettingCtrl.Update
-DELETE  /api/user/:id/setting                       UserSettingCtrl.Delete
+PUT     /api/user/setting                           UserSettingCtrl.Update
+DELETE  /api/user/setting                           UserSettingCtrl.Delete
 GET     /api/users/setting                          UserSettingCtrl.List
 
 

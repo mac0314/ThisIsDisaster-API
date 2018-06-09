@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"ThisIsDisaster-API/app/models"
+	"encoding/xml"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
 
 	"github.com/go-gorp/gorp"
 	"github.com/revel/revel"
@@ -10,6 +14,10 @@ import (
 
 type DisasterCtrl struct {
 	GorpController
+}
+
+type Disasters struct {
+	Disaster []models.Disaster
 }
 
 func defineDisasterTable(dbm *gorp.DbMap) {
@@ -36,7 +44,7 @@ func (c DisasterCtrl) Add() revel.Result {
 
 	disaster := c.parseDisaster()
 
-	disaster.Update = makeTimestamp()
+	disaster.Create = makeTimestamp()
 
 	disaster.Validate(c.Validation)
 	if c.Validation.HasErrors() {
@@ -152,6 +160,59 @@ func (c DisasterCtrl) Delete(id int64) revel.Result {
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
+	}
+
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
+
+	return c.RenderJSON(response)
+}
+
+func (c DisasterCtrl) Load() revel.Result {
+	// JSON response
+	code := RESULT_CODE_FAILURE
+	msg := "Fail."
+	response := make(map[string]interface{})
+
+	fmt.Println(path.Join(revel.BasePath, "/app/models/data/disaster.xml"))
+	// xml 파일 오픈
+	fp, err := os.Open(path.Join(revel.BasePath, "/app/models/data/disaster.xml"))
+	if err != nil {
+		panic(err)
+	}
+	defer fp.Close()
+
+	// xml 파일 읽기
+	xmlData, err := ioutil.ReadAll(fp)
+
+	// xml 디코딩
+	var disasterData Disasters
+	xmlerr := xml.Unmarshal(xmlData, &disasterData)
+	fmt.Println(disasterData)
+	if xmlerr != nil {
+		panic(xmlerr)
+	} else {
+		createTime := makeTimestamp()
+		for _, disaster := range disasterData.Disaster {
+			disaster.Validate(c.Validation)
+
+			disaster.Create = createTime
+			if c.Validation.HasErrors() {
+				msg = msg + " You have error in your disaster."
+			} else {
+				if err := c.Txn.Insert(&disaster); err != nil {
+					fmt.Println(err)
+
+					msg = msg + " Error inserting record into database!"
+				} else {
+
+					code = RESULT_CODE_SUCCESS
+					msg = "Success."
+				}
+			}
+		}
+
 	}
 
 	response["result_code"] = code

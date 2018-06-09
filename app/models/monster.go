@@ -5,11 +5,12 @@ import (
 )
 
 type Monster struct {
-	Id       int64  `db:"monster_id, primarykey, autoincrement" json:"id"`
-	Name     string `db:"name_mn" json:"name"`
-	Info     string `db:"info_ln" json:"info"`
-	Health   int64  `db:"health_n" json:"health"`
-	Resource string `db:"resource_mn" json:"resource"`
+	Id       int64  `db:"monster_id, primarykey, autoincrement" json:"id" xml:"id"`
+	Name     string `db:"name_mn" json:"name" xml:"name"`
+	Info     string `db:"info_ln" json:"info" xml:"info"`
+	Health   int64  `db:"health_n" json:"health" xml:"health"`
+	Resource string `db:"resource_mn" json:"resource" xml:"resource"`
+	Create   int64  `db:"create_n" json:"create" xml:"create"`
 }
 
 func (b *Monster) Validate(v *revel.Validation) {

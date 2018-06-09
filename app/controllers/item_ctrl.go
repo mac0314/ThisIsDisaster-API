@@ -26,8 +26,7 @@ func defineItemTable(dbm *gorp.DbMap) {
 	// e.g. VARCHAR(25)
 	t.ColMap("name_sn").SetMaxSize(20)
 	t.ColMap("type_sn").SetMaxSize(20)
-	t.ColMap("rank_sn").SetMaxSize(20)
-	t.ColMap("effect_ln").SetMaxSize(255)
+	t.ColMap("description_ln").SetMaxSize(255)
 	t.ColMap("resource_mn").SetMaxSize(50)
 }
 
@@ -46,6 +45,8 @@ func (c ItemCtrl) Add() revel.Result {
 	response := make(map[string]interface{})
 
 	item := c.parseItem()
+
+	item.Create = makeTimestamp()
 
 	item.Validate(c.Validation)
 	if c.Validation.HasErrors() {
@@ -194,8 +195,12 @@ func (c ItemCtrl) Load() revel.Result {
 	if xmlerr != nil {
 		panic(xmlerr)
 	} else {
+		createTime := makeTimestamp()
+
 		for _, item := range itemData.Item {
 			item.Validate(c.Validation)
+			item.Create = createTime
+
 			if c.Validation.HasErrors() {
 				msg = msg + " You have error in your item."
 			} else {

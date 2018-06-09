@@ -4,15 +4,15 @@ import (
 	"github.com/revel/revel"
 )
 
-type Error struct {
-	Id     int64  `db:"error_id, primarykey, autoincrement" json:"id"`
-	UId    int64  `db:"user_id" json:"uid"`
+type Apply struct {
+	Id     int64  `db:"apply_id, primarykey, autoincrement" json:"id"`
+	FId    int64  `db:"feedback_id" json:"fid"`
 	Title  string `db:"title_mn" json:"title"`
 	Log    string `db:"log_ln" json:"log"`
 	Create int64  `db:"create_n" json:"create"`
 }
 
-func (b *Error) Validate(v *revel.Validation) {
+func (b *Apply) Validate(v *revel.Validation) {
 	v.Check(b.Title,
 		revel.ValidRequired(),
 		revel.ValidMaxSize(50))

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Monsters>
+  <Monster>
+    <id>1</id>
+    <name>돼지</name>
+    <info>돼지</info>
+    <health>300</health>
+    <resource>monster1</resource>
+  </Monster>
+  <Monster>
+    <id>2</id>
+    <name>토끼</name>
+    <info>토끼</info>
+    <health>200</health>
+    <resource>monster2</resource>
+  </Monster>
+  <Monster>
+    <id>3</id>
+    <name>양</name>
+    <info>양</info>
+    <health>200</health>
+    <resource>monster3</resource>
+  </Monster>
+</Monsters>

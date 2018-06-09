@@ -110,7 +110,7 @@ func (c UserCtrl) Post() revel.Result {
 	platform := c.Params.Get("platform")
 
 	if platform == "" {
-		platform = "local"
+		platform = DEFAULT_FLATFORM
 	}
 
 	hash, _ := HashPassword(user.Password)
@@ -119,14 +119,14 @@ func (c UserCtrl) Post() revel.Result {
 	err, msg := c.insertUser(user)
 
 	create := makeTimestamp()
-	_nickname := RandStringBytesMaskImprSrc(8)
+	_nickname := RandStringBytesMaskImprSrc(DEFAULT_NICKNAME_LENGTH)
 	err, _user := c.selectUserByEmail(user.Email)
 
 	_authorize := &models.Authorize{0, _user.Id, user.Email, platform, create}
 	_character := &models.Character{0, _user.Id, _nickname}
-	_setting := &models.UserSetting{_user.Id, false, create}
-	_hhcostume := &models.HaveHeadCostume{0, _user.Id, 1, "in use", create}
-	_hbcostume := &models.HaveBodyCostume{0, _user.Id, 1, "in use", create}
+	_setting := &models.UserSetting{_user.Id, DEFAULT_SETTING_PUSH, DEFAULT_SOUND, create}
+	_hhcostume := &models.HaveHeadCostume{0, _user.Id, DEFAULT_HEAD_COSTUME, DEFAULT_COSTUME_STATE, create}
+	_hbcostume := &models.HaveBodyCostume{0, _user.Id, DEFAULT_BODY_COSTUME, DEFAULT_COSTUME_STATE, create}
 
 	c.Txn.Insert(_authorize)
 	c.Txn.Insert(_character)
@@ -173,6 +173,7 @@ func (c UserCtrl) Get() revel.Result {
 			"email":    user.Email,
 			"nickname": user.Nickname,
 			"level":    user.Level,
+			"exp":      user.Exp,
 			"gold":     user.Gold,
 			"score":    user.Score,
 		}
@@ -211,6 +212,7 @@ func (c UserCtrl) List() revel.Result {
 				"email":    user.Email,
 				"nickname": user.Nickname,
 				"level":    user.Level,
+				"exp":      user.Exp,
 				"gold":     user.Gold,
 				"score":    user.Score,
 			}

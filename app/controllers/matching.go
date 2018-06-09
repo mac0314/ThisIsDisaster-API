@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"ThisIsDisaster-API/app/models"
+	"fmt"
 
 	"github.com/go-redis/redis"
 )
 
-type MatchingCtrl struct {
+type Matching struct {
 	GorpController
 }
 
@@ -20,9 +21,12 @@ func makeClient() *redis.Client {
 	return client
 }
 
-func (c MatchingCtrl) SelectMatchingUsers(emails []string) []models.User {
+func (c Matching) SelectMatchingUsers(emails []string) []models.User {
 	//	var msg string
-	query := "SELECT * FROM user"
+	var query string
+	if len(emails) > 0 {
+		query = "SELECT * FROM user"
+	}
 
 	for i, email := range emails {
 		if i == 0 {
@@ -34,14 +38,12 @@ func (c MatchingCtrl) SelectMatchingUsers(emails []string) []models.User {
 
 	var list []models.User
 	_, _err := c.Txn.Select(&list, query)
-	if _err != nil {
-		panic(_err)
-	}
+	fmt.Println(_err)
 
 	return list
 }
 
-func (c MatchingCtrl) UpdateIP(email string, ip string) (bool, string) {
+func (c Matching) UpdateIP(email string, ip string) (bool, string) {
 	var err bool
 	var msg string
 
@@ -62,19 +64,13 @@ func CreateMatchingRoom(user models.User) string {
 	room := RandStringBytesMaskImprSrc(6)
 
 	err := client.SAdd("room/list", room).Err()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	err = client.SAdd("room/list/available", room).Err()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	err = client.Set("room/"+room+"/host", user.Email, 0).Err()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	return room
 }
@@ -83,9 +79,7 @@ func GetAllMatchingRoom() []string {
 	client := makeClient()
 
 	val, err := client.SMembers("room/list").Result()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	return val
 }
@@ -95,9 +89,7 @@ func CheckAvailableRoom() bool {
 	client := makeClient()
 
 	num, err := client.SCard("room/list/available").Result()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	if num > 0 {
 		result = true
@@ -112,9 +104,7 @@ func GetAvailableRoom() string {
 	client := makeClient()
 
 	room, err := client.SRandMember("room/list/available").Result()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	return room
 }
@@ -137,45 +127,36 @@ func JoinMatchingRoom(room string, user models.User) {
 	client := makeClient()
 
 	err := client.Set("user/"+user.Email+"/room", room, 0).Err()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	err = client.SAdd("room/"+room, user.Email).Err()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	roomNum, err := client.SCard("room/" + room).Result()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	if roomNum >= 4 {
 		client.SRem("room/list/available", room)
 	}
 }
 
-func (c MatchingCtrl) GetMatchingRoom(room string) []models.User {
+func (c Matching) GetMatchingRoom(room string) []models.User {
 	client := makeClient()
 
 	val, err := client.SMembers("room/" + room).Result()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	users := c.SelectMatchingUsers(val)
 
 	return users
 }
 
-func (c MatchingCtrl) GetMyMatchingRoom(email string) (string, []models.User) {
+func (c Matching) GetMyMatchingRoom(email string) (string, []models.User) {
 	client := makeClient()
 
 	room, err := client.Get("user/" + email + "/room").Result()
-	if err != nil {
-		panic(err)
-	}
+
+	fmt.Println(err)
 
 	users := c.GetMatchingRoom(room)
 
@@ -187,9 +168,7 @@ func LoadHost(room string) string {
 
 	host, err := client.Get("room/" + room + "/host").Result()
 
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	return host
 }
@@ -198,24 +177,18 @@ func LeaveMatchingRoom(email string) {
 	client := makeClient()
 
 	room, err := client.Get("user/" + email + "/room").Result()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	host := LoadHost(room)
 
 	if host == email {
 		users, err := client.SMembers("room/" + room).Result()
-		if err != nil {
-			panic(err)
-		}
+		fmt.Println(err)
 
 		for _, value := range users {
 			if value != email {
 				err = client.Set("room/"+room+"/host", value, 0).Err()
-				if err != nil {
-					panic(err)
-				}
+				fmt.Println(err)
 
 				break
 			}
@@ -233,9 +206,7 @@ func ClearMatchingRoom(room string) {
 	client := makeClient()
 
 	users, err := client.SMembers("room/" + room).Result()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(err)
 
 	for _, name := range users {
 		client.Del("user/" + name + "/room")

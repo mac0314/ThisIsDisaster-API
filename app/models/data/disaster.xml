@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Disasters>
+  <Disaster>
+    <id>1</id>
+    <name>지진</name>
+    <info>땅이 흔들림</info>
+  </Disaster>
+  <Disaster>
+    <id>2</id>
+    <name>태풍</name>
+    <info>천둥, 번개, 바람</info>
+  </Disaster>
+  <Disaster>
+    <id>3</id>
+    <name>가뭄</name>
+    <info>가뭄</info>
+  </Disaster>
+</Disasters>

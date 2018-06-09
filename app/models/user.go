@@ -16,6 +16,7 @@ type User struct {
 	Avatar     string `db:"avatar_ln" json:"avatar"`
 	Slug       string `db:"Slug_ln" json:"slug"`
 	Level      int64  `db:"level_n" json:"level"`
+	Exp        int64  `db:"exp_n" json:"exp"`
 	Gold       int64  `db:"gold_n" json:"gold"`
 	Score      int64  `db:"score_n" json:"score"`
 	Signin     int64  `db:"signin_n" json:"signin"`

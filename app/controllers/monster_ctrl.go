@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"ThisIsDisaster-API/app/models"
+	"encoding/xml"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
 
 	"github.com/go-gorp/gorp"
 	"github.com/revel/revel"
@@ -10,6 +14,10 @@ import (
 
 type MonsterCtrl struct {
 	GorpController
+}
+
+type Monsters struct {
+	Monster []models.Monster
 }
 
 func defineMonsterTable(dbm *gorp.DbMap) {
@@ -36,6 +44,8 @@ func (c MonsterCtrl) Add() revel.Result {
 	response := make(map[string]interface{})
 
 	monster := c.parseMonster()
+
+	monster.Create = makeTimestamp()
 
 	monster.Validate(c.Validation)
 	if c.Validation.HasErrors() {
@@ -151,6 +161,59 @@ func (c MonsterCtrl) Delete(id int64) revel.Result {
 	} else {
 		code = RESULT_CODE_SUCCESS
 		msg = "Success. " + fmt.Sprintf("Deleted %d", id)
+	}
+
+	response["result_code"] = code
+	response["result_msg"] = msg
+	response["result_type"] = RESULT_TYPE_RESPONSE
+
+	return c.RenderJSON(response)
+}
+
+func (c MonsterCtrl) Load() revel.Result {
+	// JSON response
+	code := RESULT_CODE_FAILURE
+	msg := "Fail."
+	response := make(map[string]interface{})
+
+	fmt.Println(path.Join(revel.BasePath, "/app/models/data/monster.xml"))
+	// xml 파일 오픈
+	fp, err := os.Open(path.Join(revel.BasePath, "/app/models/data/monster.xml"))
+	if err != nil {
+		panic(err)
+	}
+	defer fp.Close()
+
+	// xml 파일 읽기
+	xmlData, err := ioutil.ReadAll(fp)
+
+	// xml 디코딩
+	var monsterData Monsters
+	xmlerr := xml.Unmarshal(xmlData, &monsterData)
+	fmt.Println(monsterData)
+	if xmlerr != nil {
+		panic(xmlerr)
+	} else {
+		createTime := makeTimestamp()
+		for _, monster := range monsterData.Monster {
+			monster.Validate(c.Validation)
+
+			monster.Create = createTime
+			if c.Validation.HasErrors() {
+				msg = msg + " You have error in your monster."
+			} else {
+				if err := c.Txn.Insert(&monster); err != nil {
+					fmt.Println(err)
+
+					msg = msg + " Error inserting record into database!"
+				} else {
+
+					code = RESULT_CODE_SUCCESS
+					msg = "Success."
+				}
+			}
+		}
+
 	}
 
 	response["result_code"] = code
