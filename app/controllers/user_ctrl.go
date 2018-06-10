@@ -110,12 +110,11 @@ func (c UserCtrl) Post() revel.Result {
 	user := c.parseUser()
 	user.Level = 1
 
-	var dUser models.User
-	_dErr := c.Txn.SelectOne(&dUser, "SELECT * FROM user WHERE email_mn="+user.Email)
-	if _dErr != nil {
-		fmt.Println(_dErr)
-	} else {
+	fmt.Println(user)
 
+	var dUser models.User
+	_dErr := c.Txn.SelectOne(&dUser, "SELECT * FROM user WHERE email_mn='"+user.Email+"'")
+	if _dErr != nil {
 		platform := c.Params.Get("platform")
 
 		if platform != "local" {

@@ -74,6 +74,9 @@ func (c Game) MultiPlayLobby() revel.Result {
 
 	fmt.Println(room)
 
+	fmt.Println(len(users))
+	fmt.Println(users)
+
 	if len(users) > 0 {
 		host := LoadHost(room)
 

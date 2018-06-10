@@ -24,6 +24,7 @@ func makeClient() *redis.Client {
 func (c Matching) SelectMatchingUsers(emails []string) []models.User {
 	//	var msg string
 	var query string
+	fmt.Println(len(emails))
 	if len(emails) > 0 {
 		query = "SELECT * FROM user"
 	}
@@ -205,11 +206,11 @@ func LeaveMatchingRoom(email string) {
 
 	host := LoadHost(room)
 
+	users, err := client.SMembers("room/" + room).Result()
+	if err != nil {
+		fmt.Println(err)
+	}
 	if host == email {
-		users, err := client.SMembers("room/" + room).Result()
-		if err != nil {
-			fmt.Println(err)
-		}
 
 		for _, value := range users {
 			if value != email {
@@ -222,16 +223,19 @@ func LeaveMatchingRoom(email string) {
 			}
 		}
 
-		if len(users) == 1 {
-			client.Del("room/" + room + "/host")
-			client.SRem("room/list", room)
-			client.SRem("room/list/available", room)
-		} else {
-			client.SAdd("room/list/available", room)
-		}
-		client.Del("user/" + email + "/room")
-		client.SRem("room/"+room, email)
 	}
+
+	fmt.Println(len(users))
+
+	if len(users) == 1 {
+		client.Del("room/" + room + "/host")
+		client.SRem("room/list", room)
+		client.SRem("room/list/available", room)
+	} else {
+		client.SAdd("room/list/available", room)
+	}
+	client.Del("user/" + email + "/room")
+	client.SRem("room/"+room, email)
 
 }
 
