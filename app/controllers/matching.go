@@ -38,7 +38,10 @@ func (c Matching) SelectMatchingUsers(emails []string) []models.User {
 
 	var list []models.User
 	_, _err := c.Txn.Select(&list, query)
-	fmt.Println(_err)
+	if _err != nil {
+		fmt.Println(_err)
+	}
+	fmt.Println(query)
 
 	return list
 }
@@ -64,13 +67,19 @@ func CreateMatchingRoom(user models.User) string {
 	room := RandStringBytesMaskImprSrc(6)
 
 	err := client.SAdd("room/list", room).Err()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	err = client.SAdd("room/list/available", room).Err()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	err = client.Set("room/"+room+"/host", user.Email, 0).Err()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	return room
 }
@@ -79,7 +88,9 @@ func GetAllMatchingRoom() []string {
 	client := makeClient()
 
 	val, err := client.SMembers("room/list").Result()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	return val
 }
@@ -127,13 +138,19 @@ func JoinMatchingRoom(room string, user models.User) {
 	client := makeClient()
 
 	err := client.Set("user/"+user.Email+"/room", room, 0).Err()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	err = client.SAdd("room/"+room, user.Email).Err()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	roomNum, err := client.SCard("room/" + room).Result()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	if roomNum >= 4 {
 		client.SRem("room/list/available", room)
@@ -144,7 +161,9 @@ func (c Matching) GetMatchingRoom(room string) []models.User {
 	client := makeClient()
 
 	val, err := client.SMembers("room/" + room).Result()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	users := c.SelectMatchingUsers(val)
 
@@ -155,8 +174,9 @@ func (c Matching) GetMyMatchingRoom(email string) (string, []models.User) {
 	client := makeClient()
 
 	room, err := client.Get("user/" + email + "/room").Result()
-
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	users := c.GetMatchingRoom(room)
 
@@ -168,7 +188,9 @@ func LoadHost(room string) string {
 
 	host, err := client.Get("room/" + room + "/host").Result()
 
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	return host
 }
@@ -177,28 +199,39 @@ func LeaveMatchingRoom(email string) {
 	client := makeClient()
 
 	room, err := client.Get("user/" + email + "/room").Result()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	host := LoadHost(room)
 
 	if host == email {
 		users, err := client.SMembers("room/" + room).Result()
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		for _, value := range users {
 			if value != email {
 				err = client.Set("room/"+room+"/host", value, 0).Err()
-				fmt.Println(err)
+				if err != nil {
+					fmt.Println(err)
+				}
 
 				break
 			}
 		}
 
+		if len(users) == 1 {
+			client.Del("room/" + room + "/host")
+			client.SRem("room/list", room)
+			client.SRem("room/list/available", room)
+		} else {
+			client.SAdd("room/list/available", room)
+		}
+		client.Del("user/" + email + "/room")
+		client.SRem("room/"+room, email)
 	}
-
-	client.Del("user/" + email + "/room")
-	client.SRem("room/"+room, email)
-	client.SAdd("room/list/available", room)
 
 }
 
@@ -206,7 +239,9 @@ func ClearMatchingRoom(room string) {
 	client := makeClient()
 
 	users, err := client.SMembers("room/" + room).Result()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	for _, name := range users {
 		client.Del("user/" + name + "/room")

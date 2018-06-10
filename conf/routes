@@ -74,12 +74,6 @@ PUT     /api/award/:id                              AwardCtrl.Update
 DELETE  /api/award/:id                              AwardCtrl.Delete
 GET     /api/awards                                 AwardCtrl.List
 
-GET     /api/character/:id                          CharacterCtrl.Get
-POST    /api/character                              CharacterCtrl.Add
-PUT     /api/character/:id                          CharacterCtrl.Update
-DELETE  /api/character/:id                          CharacterCtrl.Delete
-GET     /api/characters                             CharacterCtrl.List
-
 GET     /api/costume/body/:id                       BodyCostumeCtrl.Get
 POST    /api/costume/body                           BodyCostumeCtrl.Add
 PUT     /api/costume/body/:id                       BodyCostumeCtrl.Update

@@ -50,7 +50,6 @@ func defineTable(dbm *gorp.DbMap) {
 	defineAuthorizeTable(dbm)
 	defineAwardTable(dbm)
 	defineBodyCostumeTable(dbm)
-	defineCharacterTable(dbm)
 	defineDisasterTable(dbm)
 	defineErrorTable(dbm)
 	defineEventTable(dbm)

@@ -36,18 +36,19 @@ func (c UserCtrl) insertUser(data models.User) (bool, string) {
 	var msg string
 
 	data.Validate(c.Validation)
-
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your user."
+
 	} else {
 		if _err := c.Txn.Insert(&data); _err != nil {
-			fmt.Println(_err)
+			fmt.Println(_err.Error())
 
 			msg = msg + " Error inserting record into database!"
 		} else {
 			msg = "Success."
 		}
 	}
+	fmt.Println(msg)
 
 	return err, msg
 }
@@ -92,6 +93,7 @@ func (c UserCtrl) selectUsers(lastId int64, limit uint64) (bool, []models.User) 
 		`SELECT * FROM user WHERE user_id > ? LIMIT ?`, lastId, limit)
 	if _err != nil {
 		err = true
+		fmt.Println(_err.Error())
 	} else {
 		err = false
 	}
@@ -106,38 +108,50 @@ func (c UserCtrl) Post() revel.Result {
 	response := make(map[string]interface{})
 
 	user := c.parseUser()
+	user.Level = 1
 
-	platform := c.Params.Get("platform")
+	var dUser models.User
+	_dErr := c.Txn.SelectOne(&dUser, "SELECT * FROM user WHERE email_mn="+user.Email)
+	if _dErr != nil {
+		fmt.Println(_dErr)
+	} else {
 
-	if platform == "" {
-		platform = DEFAULT_FLATFORM
+		platform := c.Params.Get("platform")
+
+		if platform != "local" {
+			user.Password = RandStringBytesMaskImprSrc(7)
+		}
+
+		if platform == "" {
+			platform = DEFAULT_FLATFORM
+		}
+
+		hash, _ := HashPassword(user.Password)
+		user.Password = hash
+
+		_err, msg := c.insertUser(user)
+		if _err {
+			fmt.Println(msg)
+		}
+
+		create := makeTimestamp()
+		_err, _user := c.selectUserByEmail(user.Email)
+
+		_authorize := &models.Authorize{0, _user.Id, user.Email, platform, create}
+		_setting := &models.UserSetting{_user.Id, DEFAULT_SETTING_PUSH, DEFAULT_SOUND, create}
+		_hhcostume := &models.HaveHeadCostume{0, _user.Id, DEFAULT_HEAD_COSTUME, DEFAULT_COSTUME_STATE, create}
+		_hbcostume := &models.HaveBodyCostume{0, _user.Id, DEFAULT_BODY_COSTUME, DEFAULT_COSTUME_STATE, create}
+
+		c.Txn.Insert(_authorize)
+		c.Txn.Insert(_setting)
+		c.Txn.Insert(_hhcostume)
+		c.Txn.Insert(_hbcostume)
+
+		if !_err {
+			code = RESULT_CODE_SUCCESS
+		}
+
 	}
-
-	hash, _ := HashPassword(user.Password)
-	user.Password = hash
-
-	err, msg := c.insertUser(user)
-
-	create := makeTimestamp()
-	_nickname := RandStringBytesMaskImprSrc(DEFAULT_NICKNAME_LENGTH)
-	err, _user := c.selectUserByEmail(user.Email)
-
-	_authorize := &models.Authorize{0, _user.Id, user.Email, platform, create}
-	_character := &models.Character{0, _user.Id, _nickname}
-	_setting := &models.UserSetting{_user.Id, DEFAULT_SETTING_PUSH, DEFAULT_SOUND, create}
-	_hhcostume := &models.HaveHeadCostume{0, _user.Id, DEFAULT_HEAD_COSTUME, DEFAULT_COSTUME_STATE, create}
-	_hbcostume := &models.HaveBodyCostume{0, _user.Id, DEFAULT_BODY_COSTUME, DEFAULT_COSTUME_STATE, create}
-
-	c.Txn.Insert(_authorize)
-	c.Txn.Insert(_character)
-	c.Txn.Insert(_setting)
-	c.Txn.Insert(_hhcostume)
-	c.Txn.Insert(_hbcostume)
-
-	if !err {
-		code = RESULT_CODE_SUCCESS
-	}
-
 	response["result_code"] = code
 	response["result_msg"] = msg
 	response["result_type"] = RESULT_TYPE_RESPONSE

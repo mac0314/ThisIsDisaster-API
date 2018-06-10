@@ -86,6 +86,7 @@ func (c Game) MultiPlayLobby() revel.Result {
 			}
 
 			userData := map[string]interface{}{
+				"id":       user.Id,
 				"email":    user.Email,
 				"nickname": user.Nickname,
 				"level":    user.Level,
