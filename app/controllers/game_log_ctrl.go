@@ -15,7 +15,8 @@ type GameLogCtrl struct {
 func defineGameLogTable(dbm *gorp.DbMap) {
 	// set "id" as primary key and autoincrement
 	t := dbm.AddTableWithName(models.GameLog{}, "game_log").SetKeys(true, "game_log_id")
-	// e.g. VARCHAR(25)
+
+	t.ColMap("room_sn").SetMaxSize(20)
 	t.ColMap("title_mn").SetMaxSize(50)
 	t.ColMap("log_ln").SetMaxSize(255)
 }
@@ -37,7 +38,9 @@ func (c GameLogCtrl) Add() revel.Result {
 	response := make(map[string]interface{})
 
 	gameLog := c.parseGameLog()
-	// Validate the model
+
+	gameLog.Create = makeTimestamp()
+
 	gameLog.Validate(c.Validation)
 	if c.Validation.HasErrors() {
 		msg = msg + " You have error in your game_log."
@@ -97,6 +100,36 @@ func (c GameLogCtrl) selectGameLogByEmail(email string) (bool, *models.GameLog) 
 	}
 
 	return err, gameLog
+}
+
+func (c GameLogCtrl) selectGameRoomLogs(lastId int64, limit uint64, room string) (bool, []models.GameLog) {
+	var err bool
+	var gameLogs []models.GameLog
+
+	_, _err := c.Txn.Select(&gameLogs,
+		`SELECT * FROM game_log WHERE room_sn = ? AND game_log_id > ? LIMIT ?`, room, lastId, limit)
+	if _err != nil {
+		err = true
+	} else {
+		err = false
+	}
+
+	return err, gameLogs
+}
+
+func (c GameLogCtrl) selectGameRoomUserLogs(lastId int64, limit uint64, userId int64, room string) (bool, []models.GameLog) {
+	var err bool
+	var gameLogs []models.GameLog
+
+	_, _err := c.Txn.Select(&gameLogs,
+		`SELECT * FROM game_log WHERE user_id = ? AND room_sn = ? AND game_log_id > ? LIMIT ?`, userId, room, lastId, limit)
+	if _err != nil {
+		err = true
+	} else {
+		err = false
+	}
+
+	return err, gameLogs
 }
 
 func (c GameLogCtrl) selectGameLogs(lastId int64, limit uint64) (bool, []models.GameLog) {
@@ -177,14 +210,43 @@ func (c GameLogCtrl) List() revel.Result {
 	var err bool
 	var gameLogs []models.GameLog
 
+	email := c.Params.Get("email")
+	room := c.Params.Get("room")
+
 	userId := parseIntOrDefault(c.Params.Get("uid"), -1)
 	lastId := parseIntOrDefault(c.Params.Get("lid"), -1)
 	limit := parseUintOrDefault(c.Params.Get("limit"), uint64(25))
 
-	if userId > -1 {
-		err, gameLogs = c.selectGameLogsByUserId(userId)
+	if email != "" {
+		var user models.User
+
+		query := "SELECT * FROM user WHERE email_mn='" + email + "'"
+
+		_err := c.Txn.SelectOne(&user, query)
+		if _err != nil {
+			fmt.Println(_err.Error())
+
+			if room != "" {
+				err, gameLogs = c.selectGameRoomUserLogs(lastId, limit, userId, room)
+			} else {
+				err, gameLogs = c.selectGameLogsByUserId(userId)
+			}
+		} else {
+			userId = user.Id
+
+			if room != "" {
+				err, gameLogs = c.selectGameRoomLogs(lastId, limit, room)
+			} else {
+				err, gameLogs = c.selectGameLogs(lastId, limit)
+			}
+		}
+
 	} else {
-		err, gameLogs = c.selectGameLogs(lastId, limit)
+		if room != "" {
+			err, gameLogs = c.selectGameRoomLogs(lastId, limit, room)
+		} else {
+			err, gameLogs = c.selectGameLogs(lastId, limit)
+		}
 	}
 
 	if err {

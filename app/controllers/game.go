@@ -117,6 +117,7 @@ func (c Game) MultiPlayLobby() revel.Result {
 
 func (c Game) LeaveMultiPlayLobby() revel.Result {
 	email := c.Params.Get("email")
+	fmt.Println(email)
 
 	LeaveMatchingRoom(email)
 

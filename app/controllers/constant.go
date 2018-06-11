@@ -87,7 +87,7 @@ const RESULT_TYPE_SMTP = "SMTP"
 const RESULT_TYPE_STAGE = "Stage"
 const RESULT_TYPE_STAGES = "Stages"
 
-const RESULT_TYPE_USER = "User"
+const RESULT_TYPE_USER = "UserResponse"
 const RESULT_TYPE_USERS = "Users"
 
 const RESULT_TYPE_USER_SETTING = "UserSetting"
