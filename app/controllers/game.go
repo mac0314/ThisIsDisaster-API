@@ -153,6 +153,32 @@ func (c Game) StartGame() revel.Result {
 	return c.RenderJSON(response)
 }
 
+func (c Game) EndGame() revel.Result {
+	email := c.Params.Get("email")
+
+	var user models.User
+
+	c.Txn.SelectOne(&user, "SELECT * FROM user WHERE email_mn ='"+email+"'")
+
+	user.Score += 10
+	user.Gold += 130
+	user.Exp += user.Exp + 70
+	if user.Exp > 100 {
+		user.Level += 1
+		user.Exp -= 100
+	}
+
+	c.Txn.Update(&user)
+
+	response := map[string]interface{}{
+		"result_code": 200,
+		"result_msg":  "Success",
+		"result_type": RESULT_TYPE_RESPONSE,
+	}
+
+	return c.RenderJSON(response)
+}
+
 func (c Game) MultiPlayResult() revel.Result {
 	// TODO modify demo data
 	testData := `

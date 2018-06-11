@@ -39,10 +39,11 @@ GET     /api/game/multiplay/lobby                   Game.MultiPlayLobby
 POST    /api/game/multiplay/join                    Game.MultiPlayJoin
 POST    /api/game/multiplay/leave                   Game.LeaveMultiPlayLobby
 POST    /api/game/start                             Game.StartGame
+POST    /api/game/end                               Game.EndGame
 
-POST     /api/data/disaster/load                    DisasterCtrl.Load
-POST     /api/data/item/load                        ItemCtrl.Load
-POST     /api/data/monster/load                     MonsterCtrl.Load
+POST    /api/data/disaster/load                    DisasterCtrl.Load
+POST    /api/data/item/load                        ItemCtrl.Load
+POST    /api/data/monster/load                     MonsterCtrl.Load
 
 GET     /api/achievement/:id                        AchievementCtrl.Get
 POST    /api/achievement                            AchievementCtrl.Post
